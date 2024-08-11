@@ -128,7 +128,7 @@ let setAsteroidPosition = asteroid => {
   let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1)
   asteroid.style.left = randomPosition + 'px'
   setTimeout(() => {
-    asteroid.style.top = window.innerHeight + 'px'
+    asteroid.style.top = '0px'
   }, 1) 
   console.log(star)
 }
