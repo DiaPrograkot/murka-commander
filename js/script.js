@@ -129,7 +129,8 @@ let setAsteroidPosition = asteroid => {
   asteroid.style.left = randomPosition + 'px'
   setTimeout(() => {
     asteroid.style.top = window.innerHeight + 'px'
-  }, 1)
+  }, 1) 
+  console.log(star)
 }
 
 //Set asteroid shape
