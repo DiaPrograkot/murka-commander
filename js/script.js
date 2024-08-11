@@ -128,7 +128,7 @@ let setAsteroidPosition = asteroid => {
   let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1)
   asteroid.style.left = randomPosition + 'px'
   setTimeout(() => {
-    asteroid.style.bottom = window.innerHeight + 140 + 'px'
+    asteroid.style.top = window.innerHeight + 'px'
   }, 1)
 }
 
