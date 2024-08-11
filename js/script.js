@@ -71,56 +71,64 @@ let removeLasers = () => {
 
 //Laser movement
 let laserMovement = laser => {
-  // laser.style.top = laser.offsetTop - window.innerHeight + 'px'
-  laser.style.top = window.innerHeight + 'px'
+  laser.style.top = window.innerHeight + 'px';
   let laserInterval = setInterval(() => {
-    if (
-      laser.offsetTop <=
-        asteroidElement.offsetTop + asteroidElement.offsetHeight - 10 &&
-      laser.offsetTop >= asteroidElement.offsetTop
-    ) {
-      if (
-        laser.offsetLeft >
-          asteroidElement.offsetLeft - asteroidElement.offsetWidth / 2 &&
-        laser.offsetLeft <
-          asteroidElement.offsetLeft + asteroidElement.offsetWidth
-      ) {
-        removeLaser(laser)
-        //Make asteroid smaller when hit
-        if (asteroidElement.offsetWidth > 80) {
-          asteroidElement.style.width = asteroidElement.offsetWidth - 40 + 'px'
-          asteroidElement.style.height =
-            asteroidElement.offsetHeight - 40 + 'px'
-        } else {
-          crash.play()
-          crash.volume = 0.1
-          container.removeChild(asteroidElement)
-          setCounter()
-          asteroidFunction()
-          clearInterval(laserInterval)
+    let asteroidId = laser.getAttribute('data-asteroid-id'); // Получаем идентификатор астероида
+    let currentAsteroid = document.querySelector('.asteroid[data-id="' + asteroidId + '"]'); // Поиск астероида по ID
+
+    if (currentAsteroid) {
+      // Определяем границы лазера
+      let laserRect = laser.getBoundingClientRect();
+      // Определяем границы астероида
+      let asteroidRect = currentAsteroid.getBoundingClientRect();
+      // Проверка пересечения прямоугольников
+      if (laserRect.top < asteroidRect.bottom &&
+          laserRect.bottom > asteroidRect.top &&
+          laserRect.left < asteroidRect.right &&
+          laserRect.right > asteroidRect.left) {
+        
+            removeLaser(laser);
+
+        if (container.contains(currentAsteroid)) {
+          if (currentAsteroid.offsetWidth > 80) {
+            currentAsteroid.style.width = currentAsteroid.offsetWidth - 40 + 'px';
+            currentAsteroid.style.height = currentAsteroid.offsetHeight - 40 + 'px';
+          } else {
+            crash.play();
+            crash.volume = 0.1;
+            container.removeChild(currentAsteroid);
+            setCounter();
+            asteroidFunction(); // Создаем новый астероид
+          }
+          clearInterval(laserInterval);
         }
       }
     }
-  }, 10)
+  }, 10);
 }
 
+
+
+
 //Create laser and initial positioning
-let createLaser = () => {
-  let laser = document.createElement('img')
-  laser.classList.add('laser')
-  laser.setAttribute('src', 'img/bullet.svg')
-  container.insertAdjacentElement('beforeend', laser)
-  laser.style.left = ship.offsetLeft + 40 + 'px'
-  // laser.style.top = ship.offsetTop + 110 + 'px'
-  laserMovement(laser)
+let createLaser = (asteroidId) => {
+  let laser = document.createElement('img');
+  laser.classList.add('laser');
+  laser.setAttribute('src', 'img/bullet.svg');
+  laser.setAttribute('data-asteroid-id', asteroidId); // Присваиваем идентификатор астероида
+  container.insertAdjacentElement('beforeend', laser);
+  laser.style.left = ship.offsetLeft + 40 + 'px';
+  laserMovement(laser); // Передаем лазер в функцию движения
 }
 
 //Lasershot function
 let laserShot = () => {
-  createLaser()
-  removeLasers()
-  laserSound()
+  let asteroidId = document.querySelector('.asteroid').getAttribute('data-id');
+  createLaser(asteroidId);
+  removeLasers();
+  laserSound();
 }
+
 
 //Set the asteroid position
 let setAsteroidPosition = asteroid => {
@@ -224,11 +232,14 @@ let createAsteroid = () => {
 
 //Full asteroid functionality
 let asteroidFunction = () => {
-  let asteroid = createAsteroid()
-  container.append(asteroid)
-  setAsteroidShape(asteroid)
-  setAsteroidPosition(asteroid)
-  removeAsteroid(asteroid)
+  let asteroid = createAsteroid();
+  let asteroidId = Date.now(); // Генерация уникального идентификатора
+  asteroid.setAttribute('data-id', asteroidId); // Присваиваем идентификатор элементу
+  container.append(asteroid);
+  setAsteroidShape(asteroid);
+  setAsteroidPosition(asteroid);
+  removeAsteroid(asteroid);
+  return asteroidId; // Возвращаем идентификатор
 }
 
 showStars()
@@ -315,3 +326,5 @@ space.addEventListener('click', () => {
   videoSource.setAttribute('src', 'video/galaxy.mp4')
   videoContainer.load()
 })
+
+
