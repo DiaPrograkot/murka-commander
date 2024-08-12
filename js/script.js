@@ -47,15 +47,6 @@ let setCounter = () => {
   counter.textContent = parseInt(counter.textContent) + 1;
 };
 
-// Initialize score
-let score = 0;
-
-// Update score function
-let updateScore = () => {
-  score++;
-  document.getElementById('score').innerText = score;
-};
-
 // Plays laser sound
 let laserSound = () => {
   lasersound.pause();
@@ -73,36 +64,47 @@ let removeLaser = laser => {
 
 // Remove lasers when they hit the bottom of the window
 let removeLasers = () => {
-  let lasers = document.querySelectorAll('.laser');
-  lasers.forEach(laser => {
-    if (laser.offsetTop >= window.innerHeight) {
+  let oldLasers = document.querySelectorAll('.laser');
+  for (let i = 0; i < oldLasers.length; i++) {
+    let laser = oldLasers[i];
+    if (laser.offsetTop <= -10) {
       container.removeChild(laser);
     }
-  });
+  }
 };
 
-// Laser movement (now moving downward)
-let laserMovement = (laser, asteroid) => {
+// Laser movement without using id
+let laserMovement = laser => {
+  laser.style.top = window.innerHeight + 'px';
   let laserInterval = setInterval(() => {
-    laser.style.top = laser.offsetTop + 10 + 'px';  // Теперь пули движутся вниз
+    let asteroids = document.querySelectorAll('.asteroid');
 
-    if (
-      laser.offsetTop >= asteroid.offsetTop &&
-      laser.offsetTop <= asteroid.offsetTop + asteroid.offsetHeight &&
-      laser.offsetLeft > asteroid.offsetLeft - asteroid.offsetWidth / 2 &&
-      laser.offsetLeft < asteroid.offsetLeft + asteroid.offsetWidth
-    ) {
-      removeLaser(laser);
-      if (asteroid.offsetWidth > 80) {
-        asteroid.style.width = asteroid.offsetWidth - 40 + 'px';
-        asteroid.style.height = asteroid.offsetHeight - 40 + 'px';
-      } else {
-        crash.play();
-        crash.volume = 0.1;
-        container.removeChild(asteroid);
-        updateScore();
-        asteroidFunction();
-        clearInterval(laserInterval);
+    for (let i = 0; i < asteroids.length; i++) {
+      let currentAsteroid = asteroids[i];
+      let laserRect = laser.getBoundingClientRect();
+      let asteroidRect = currentAsteroid.getBoundingClientRect();
+
+      if (laserRect.top < asteroidRect.bottom &&
+          laserRect.bottom > asteroidRect.top &&
+          laserRect.left < asteroidRect.right &&
+          laserRect.right > asteroidRect.left) {
+        
+        removeLaser(laser);
+
+        if (container.contains(currentAsteroid)) {
+          if (currentAsteroid.offsetWidth > 80) {
+            currentAsteroid.style.width = currentAsteroid.offsetWidth - 40 + 'px';
+            currentAsteroid.style.height = currentAsteroid.offsetHeight - 40 + 'px';
+          } else {
+            crash.play();
+            crash.volume = 0.1;
+            container.removeChild(currentAsteroid);
+            setCounter();
+            asteroidFunction(); // Создаем новый астероид
+          }
+          clearInterval(laserInterval);
+          break; // Выходим из цикла после попадания
+        }
       }
     }
   }, 10);
@@ -115,16 +117,17 @@ let createLaser = () => {
   laser.setAttribute('src', 'img/bullet.svg');
   container.insertAdjacentElement('beforeend', laser);
   laser.style.left = ship.offsetLeft + 40 + 'px';
-  laser.style.top = ship.offsetTop + 110 + 'px';
-  let asteroid = document.querySelector('.asteroid');  // Assuming you have only one asteroid at a time
-  laserMovement(laser, asteroid);
+  laserMovement(laser);
 };
 
-// Laser shot function
+// Lasershot function
 let laserShot = () => {
-  createLaser();
-  removeLasers();
-  laserSound();
+  let asteroidExists = document.querySelector('.asteroid');
+  if (asteroidExists) {
+    createLaser();
+    removeLasers();
+    laserSound();
+  }
 };
 
 // Set the asteroid position
@@ -139,9 +142,8 @@ let setAsteroidPosition = asteroid => {
 
 // Set asteroid shape
 let setAsteroidShape = asteroid => {
-  let asteroidShapeNumber = Math.floor(Math.random() * 9) + 1;
-  let asteroidShapeSize = Math.floor(Math.random() * 16) + 4;
-  let asteroidShape;
+  asteroidShapeNumber = Math.floor(Math.random() * 9) + 1;
+  asteroidShapeSize = Math.floor(Math.random() * 16) + 4;
   switch (asteroidShapeNumber) {
     case 1:
       asteroidShape = 'img/asteroid-purple.svg';
@@ -300,20 +302,10 @@ document.addEventListener('mousemove', event => {
 
 // Touch ship movement
 ship.addEventListener('touchmove', event => {
-  ship.style.left = event.touches[0].clientX - 60 + 'px';
+  if (Math.floor(event.touches[0].clientX) > window.innerWidth - 100) {
+    ship.style.left = window.innerWidth - 100 + 'px';
+  } else {
+    ship.style.left = Math.floor(event.touches[0].clientX) + 'px';
+  }
 });
-
-// Video background switcher
-earth.addEventListener('click', () => {
-  videoSource.src = 'video/earth.mp4';
-  videoContainer.load();
-});
-mars.addEventListener('click', () => {
-  videoSource.src = 'video/mars.mp4';
-  videoContainer.load();
-});
-space.addEventListener('click', () => {
-  videoSource.src = 'video/space.mp4';
-  videoContainer.load();
-}); 
 
