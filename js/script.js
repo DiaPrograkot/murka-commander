@@ -44,6 +44,7 @@ let showStars = () => {
 }
 
 let setCounter = () => {
+  
   counter.textContent = parseInt(counter.textContent) + 1
 }
 
@@ -72,8 +73,17 @@ let removeLasers = () => {
 //Laser movement
 let laserMovement = laser => {
   // laser.style.top = laser.offsetTop - window.innerHeight + 'px'
-  laser.style.top = window.innerHeight + 'px'
+  
   let laserInterval = setInterval(() => {
+    laser.style.top = laser.offsetTop + window.innerHeight + 'px'
+
+    // Проверка на выход за верхнюю границу окна
+    if (laser.offsetTop > window.innerHeight) {
+      clearInterval(laserInterval);
+      removeLaser(laser);
+      return;
+    }
+
     if (
       laser.offsetTop <=
         asteroidElement.offsetTop + asteroidElement.offsetHeight - 10 &&
@@ -97,8 +107,9 @@ let laserMovement = laser => {
           container.removeChild(asteroidElement)
           setCounter()
           asteroidFunction()
-          clearInterval(laserInterval)
+          
         }
+        clearInterval(laserInterval)
       }
     }
   }, 10)
@@ -128,7 +139,7 @@ let setAsteroidPosition = asteroid => {
   let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1)
   asteroid.style.left = randomPosition + 'px'
   setTimeout(() => {
-    asteroid.style.top = '0px'
+    asteroid.style.bottom = window.innerHeight + 140 + 'px'
   }, 1) 
   console.log(star)
 }
@@ -225,6 +236,7 @@ let createAsteroid = () => {
 
 //Full asteroid functionality
 let asteroidFunction = () => {
+  console.log('Создание нового астероида');
   let asteroid = createAsteroid()
   container.append(asteroid)
   setAsteroidShape(asteroid)
