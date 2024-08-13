@@ -22,6 +22,7 @@ let videoContainer = document.querySelector('.videoContainer')
 let videoSource = videoContainer.querySelector('source')
 let star
 
+
 let asteroidElement
 let asteroidShapeNumber
 let asteroidShapeSize
@@ -63,9 +64,11 @@ let removeLaser = laser => {
 }
 //Remove lasers when hit the bottom of the window
 let removeLasers = () => {
-  let oldLaser = document.querySelector('.laser')
-  if (oldLaser.offsetTop <= -10) {
-    container.removeChild(oldLaser)
+  let oldLasers = document.querySelectorAll('.laser')
+  for (let oldLaser of oldLasers) {
+    if (oldLaser.getBoundingClientRect().top >= window.innerHeight) {
+      oldLaser.remove()
+  }
   }
 }
 
