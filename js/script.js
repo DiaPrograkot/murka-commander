@@ -6,6 +6,7 @@ let playerPlay = document.querySelector('.playerPlay')
 let playerLabel = document.querySelector('.playerLabel')
 let ship = document.querySelector('.ship')
 let gameover = document.querySelector('.gameover')
+let startgame = document.querySelector('.startgame') 
 let audio = document.querySelector('.audio')
 let lasersound = document.querySelector('.lasersound')
 let crash = document.querySelector('.crash')
@@ -14,6 +15,7 @@ let toggleMusic = document.querySelector('.toggleMusic')
 let muteSpeaker = toggleMusic.querySelector('.muteSpeaker')
 let musicButton = toggleMusic.querySelector('.musicButton')
 let play = document.querySelector('.play')
+let startplay = document.querySelector('.startplay')  
 let earth = document.querySelector('.earthImg')
 let mars = document.querySelector('.marsImg')
 let space = document.querySelector('.spaceImg')
@@ -22,7 +24,7 @@ let videoContainer = document.querySelector('.videoContainer')
 let videoSource = videoContainer.querySelector('source')
 let star
 
-
+let moveInterval = null;
 let asteroidElement
 let asteroidShapeNumber
 let asteroidShapeSize
@@ -179,7 +181,11 @@ let setAsteroidShape = asteroid => {
 let gameoverFunc = () => {
   gameover.style.display = 'flex'
   play.addEventListener('click', e => {
-    location.reload()
+    //Вместо перезагрузки страницы (дублирует кнопку старт после перезагрузки) сбрасываем жизни и счёт и вызываем показ новых
+    stars = 3
+    counter.textContent = '0'
+    showStars()
+    gameover.style.display = 'none'
   })
 }
 
@@ -234,12 +240,27 @@ let asteroidFunction = () => {
   removeAsteroid(asteroid)
 }
 
+// Окно в начале игры, запускающая её
+let startgameFunc = () => {
+  startgame.style.display = 'flex'
+  startplay.addEventListener('click', () => {
+    startgame.style.display = 'none'
+    startGame()
+  })
+}
+// Запуск астероидов, включение выстрелов
+let startGame = () => {
+  asteroidFunction()
+  document.addEventListener('click', laserShot)
+  }
+
+  // Добавлен вызов функции старта игры
 showStars()
 let nameStorage = localStorage.getItem('name')
 console.log(nameStorage)
 if (nameStorage) {
   playerLabel.textContent = nameStorage
-  asteroidFunction()
+  startgameFunc()
   document.addEventListener('click', () => {
     laserShot()
   })
@@ -251,7 +272,7 @@ if (nameStorage) {
       localStorage.setItem('name', playerName)
       playerLabel.textContent = playerName
       playerNameContainer.style.display = 'none'
-      asteroidFunction()
+      startgameFunc()
       //Mouse laser shot event listener
       document.addEventListener('click', () => {
         laserShot()
@@ -277,18 +298,30 @@ toggleMusic.addEventListener('click', () => {
   muteSpeaker.style.opacity = '1'
 })
 
-//Keyboard ship movement
 document.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft') {
-    ship.style.left = ship.offsetLeft - 40 + 'px'
-  }
-  if (event.key === 'ArrowRight') {
-    ship.style.left = ship.offsetLeft + 40 + 'px'
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    if (!moveInterval) {
+      moveInterval = setInterval(() => {
+        let direction = event.key === 'ArrowLeft' ? -8 : 8;
+        let newPosition = ship.offsetLeft + direction;
+        // Ограничиваем перемещение элемента в пределах контейнера
+        if (newPosition >= 0 && newPosition <= container.offsetWidth - ship.offsetWidth) {
+          ship.style.left = newPosition + 'px';
+        }
+      }, 20);
+    }
   }
   if (event.key === ' ') {
-    console.log('Space')
+    laserShot();
   }
-})
+});
+
+document.addEventListener('keyup', event => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    clearInterval(moveInterval);
+    moveInterval = null;
+  }
+});
 
 //Mouse ship movement
 document.addEventListener('mousemove', event => {

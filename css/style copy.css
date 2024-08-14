@@ -336,7 +336,7 @@ body {
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
 }
-.gameover {
+.startgame, .gameover {
   width: 80rem;
   height: 60vh;
   background-color: rgba(255, 255, 0, 0.151);
@@ -371,7 +371,7 @@ body {
   font-size: 2rem;
   text-decoration: underline;
 }
-.gameover:hover {
+.startgame, .gameover:hover {
   border: 20px solid rgb(255, 187, 0);
 }
 
@@ -397,7 +397,7 @@ body {
   margin-right: 1rem;
 }
 
-.play {
+.startplay, .play {
   cursor: pointer;
   position: absolute;
   top: 60%;
@@ -407,6 +407,7 @@ body {
   font-size: 10rem;
   cursor: pointer;
 }
+
 .playerPlay {
   cursor: pointer;
   margin-top: 2rem;
@@ -433,7 +434,7 @@ body {
   text-align: center;
 }
 
-.gameover:hover .play {
+.startgame, .gameover:hover .play {
   color: rgba(238, 14, 14, 0.863);
   font-size: 11rem;
 }
