@@ -73,17 +73,8 @@ let removeLasers = () => {
 //Laser movement
 let laserMovement = laser => {
   // laser.style.top = laser.offsetTop - window.innerHeight + 'px'
-  
+  laser.style.top = window.innerHeight + 'px'
   let laserInterval = setInterval(() => {
-    laser.style.top = laser.offsetTop + window.innerHeight + 'px'
-
-    // Проверка на выход за верхнюю границу окна
-    if (laser.offsetTop > window.innerHeight) {
-      clearInterval(laserInterval);
-      removeLaser(laser);
-      return;
-    }
-
     if (
       laser.offsetTop <=
         asteroidElement.offsetTop + asteroidElement.offsetHeight - 10 &&
@@ -107,9 +98,8 @@ let laserMovement = laser => {
           container.removeChild(asteroidElement)
           setCounter()
           asteroidFunction()
-          
+          clearInterval(laserInterval)
         }
-        clearInterval(laserInterval)
       }
     }
   }, 10)
@@ -191,7 +181,6 @@ let gameoverFunc = () => {
     location.reload()
   })
 }
-
 //Removes stars
 let removeStars = () => {
   if (stars > 1) {
@@ -245,6 +234,7 @@ let asteroidFunction = () => {
 }
 
 showStars()
+
 let nameStorage = localStorage.getItem('name')
 console.log(nameStorage)
 if (nameStorage) {
