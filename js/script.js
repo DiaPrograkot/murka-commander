@@ -21,7 +21,8 @@ let lives = document.querySelector('.lives')
 let videoContainer = document.querySelector('.videoContainer')
 let videoSource = videoContainer.querySelector('source')
 let star
-
+let startGame = document.querySelector('.startGame')
+let startPlay = document.querySelector('.startPlay')
 
 let asteroidElement
 let asteroidShapeNumber
@@ -30,6 +31,8 @@ let asteroidShape
 let asteroidX
 let asteroidY
 let stars = 3
+
+
 
 //Display stars
 let showStars = () => {
@@ -113,7 +116,7 @@ let createLaser = () => {
   laser.classList.add('laser')
   laser.setAttribute('src', 'img/bullet.svg')
   container.insertAdjacentElement('beforeend', laser)
-  laser.style.left = ship.offsetLeft + 40 + 'px'
+  laser.style.left = ship.offsetLeft + 45 + 'px'
   // laser.style.top = ship.offsetTop + 110 + 'px'
   laserMovement(laser)
 }
@@ -177,11 +180,31 @@ let setAsteroidShape = asteroid => {
 
 //Gameover Popup
 let gameoverFunc = () => {
-  gameover.style.display = 'flex'
-  play.addEventListener('click', e => {
-    location.reload()
-  })
+  gameover.style.display = 'flex';
+  
+  // Убедитесь, что элемент play правильно выбран из gameover
+  let playButton = gameover.querySelector('.play');
+  
+  playButton.addEventListener('click', e => {
+    restartGame()
+   // Прячем окно gameover
+  gameover.style.display = 'none';
+  });
 }
+ 
+// Restart Game
+const restartGame = () => {
+  stars = 3;
+  counter.textContent = '0';
+  showStars();
+};
+
+// No stars before game
+const noStars =() => {
+  stars = 0;
+}
+
+
 
 //Removes stars
 let removeStars = () => {
@@ -194,8 +217,28 @@ let removeStars = () => {
     lives.removeChild(star)
     stars--
     gameoverFunc()
-  }
-}
+    
+  } 
+  } 
+
+ 
+  
+// Button Play 
+window.addEventListener('load', () => {
+    const startGameButtonContainer = document.querySelector('.startgameButtonContainer');
+    const playButton = startGameButtonContainer.querySelector('.play');
+    noStars ()
+    // Показать экран "Start Game"
+    startGameButtonContainer.style.display = 'flex';
+    // Обработка нажатия кнопки "Play" для начала игры
+    playButton.addEventListener('click', () => {
+      startGameButtonContainer.style.display = 'none'; // Скрыть экран "Start Game"
+      // Запустить игру
+      restartGame()
+    });
+    
+  });
+
 
 let timeoutFunc = asteroid => {
   let asteroidPosition = asteroid.offsetTop
@@ -280,10 +323,14 @@ toggleMusic.addEventListener('click', () => {
 //Keyboard ship movement
 document.addEventListener('keydown', event => {
   if (event.key === 'ArrowLeft') {
-    ship.style.left = ship.offsetLeft - 40 + 'px'
+    if (ship.offsetLeft - 25 >= 0) {
+      ship.style.left = ship.offsetLeft - 25 + 'px';
+    } else {
+      ship.style.left = '0px';
+    }
   }
   if (event.key === 'ArrowRight') {
-    ship.style.left = ship.offsetLeft + 40 + 'px'
+    ship.style.left = ship.offsetLeft + 25 + 'px'
   }
   if (event.key === ' ') {
     console.log('Space')
@@ -292,7 +339,19 @@ document.addEventListener('keydown', event => {
 
 //Mouse ship movement
 document.addEventListener('mousemove', event => {
-  ship.style.left = event.clientX - 60 + 'px'
+  ship.style.left = event.clientX - 25 + 'px'
+  document.addEventListener('mousemove', event => {
+    // Рассчитываем новую позицию по горизонтали
+    let newLeft = event.clientX -7;
+  
+    // Проверяем, не выходит ли котик за правый край
+    if (newLeft + ship.offsetWidth > window.innerWidth) {
+      newLeft = window.innerWidth - ship.offsetWidth;
+    }
+  
+    // Устанавливаем новую позицию
+    ship.style.left = newLeft + 'px';
+  }); 
 })
 
 //Touch ship movement
@@ -318,3 +377,42 @@ space.addEventListener('click', () => {
   videoSource.setAttribute('src', 'video/galaxy.mp4')
   videoContainer.load()
 })
+  
+
+// Плавное движение корабля
+ship.style.transition = 'left 0.05s';
+
+// Keyboard ship movement
+document.addEventListener('keydown', event => {
+  const shipSpeed = 100; // Скорость движения корабля
+  const shipRect = ship.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+
+  // Определение направления движения
+  let moveLeft = false;
+  let moveRight = false;
+
+  // Установка флага направления в зависимости от нажатой клавиши
+  if (event.key === 'ArrowLeft' || event.key === 'a') {
+    moveLeft = true;
+  }
+  if (event.key === 'ArrowRight' || event.key === 'd') {
+    moveRight = true;
+  }
+  
+  // Двигаем влево
+  if (moveLeft) {
+    ship.style.left = `${Math.max(0, shipRect.left - containerRect.left - shipSpeed)}+100px`;
+  }
+  // Двигаем вправо
+  if (moveRight) {
+    ship.style.left = `${Math.min(containerRect.width - shipRect.width, shipRect.left - containerRect.left + shipSpeed)}+100px`;
+  }
+  // Лазерный выстрел
+  if (event.key === ' ' || event.key === ' ') {
+    laserShot();
+  }
+});
+
+
+
