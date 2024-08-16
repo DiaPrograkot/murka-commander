@@ -31,6 +31,10 @@ let asteroidX
 let asteroidY
 let stars = 3
 
+//для клавиатуры
+let moveLeft = false;  // Флаг для движения влево
+let moveRight = false; // Флаг для движения вправо
+
 //Display stars
 let showStars = () => {
   lives.innerHTML = ''
@@ -113,7 +117,7 @@ let createLaser = () => {
   laser.classList.add('laser')
   laser.setAttribute('src', 'img/bullet.svg')
   container.insertAdjacentElement('beforeend', laser)
-  laser.style.left = ship.offsetLeft + 40 + 'px'
+  laser.style.left = ship.offsetLeft + 45 + 'px'
   // laser.style.top = ship.offsetTop + 110 + 'px'
   laserMovement(laser)
 }
@@ -190,7 +194,6 @@ let removeStars = () => {
     stars--
     console.log(stars)
   } else if (stars === 1) {
-    console.log('egual 1')
     lives.removeChild(star)
     stars--
     gameoverFunc()
@@ -238,11 +241,16 @@ showStars()
 let nameStorage = localStorage.getItem('name')
 console.log(nameStorage)
 if (nameStorage) {
-  playerLabel.textContent = nameStorage
-  asteroidFunction()
-  document.addEventListener('click', () => {
-    laserShot()
+  gameover.style.display = 'flex'
+  play.addEventListener('click', e => {
+    gameover.style.display = 'none'
+    asteroidFunction()
+    document.addEventListener('click', () => {
+      laserShot()
+    })
   })
+  playerLabel.textContent = nameStorage
+
 } else {
   playerNameContainer.style.display = 'flex'
   playerPlay.addEventListener('click', () => {
@@ -267,28 +275,63 @@ let musicPlay = setTimeout(() => {
 }, 4000)
 
 //Toggle music
-toggleMusic.addEventListener('click', () => {
+toggleMusic.addEventListener('click', event => {
   if (audio.paused) {
     muteSpeaker.style.opacity = '0'
+    event.stopPropagation();
     return audio.play()
   }
   audio.pause()
   audio.currentTime = 0
   muteSpeaker.style.opacity = '1'
+
+  event.stopPropagation()
 })
 
+let isSpacePressed = false
+
 //Keyboard ship movement
-document.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft') {
-    ship.style.left = ship.offsetLeft - 40 + 'px'
-  }
-  if (event.key === 'ArrowRight') {
-    ship.style.left = ship.offsetLeft + 40 + 'px'
+document.addEventListener('keydown', event => {  
+  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
+      moveLeft = true;
+  }  
+  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
+      moveRight = true;
+  }  
+  if (event.key === ' ' && !isSpacePressed) {  
+    laserShot()
+    isSpacePressed = true
+  }  
+});
+
+document.addEventListener('keyup', event => {  
+  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
+      moveLeft = false;
+  }  
+  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
+      moveRight = false;
   }
   if (event.key === ' ') {
-    console.log('Space')
+    isSpacePressed = false
   }
-})
+});
+
+
+// Функция анимации
+function animate() {
+  const rect = ship.getBoundingClientRect();
+  if (moveLeft && rect.left > 0) {
+      ship.style.left = ship.offsetLeft - 5 + 'px';
+  }
+  if (moveRight && rect.right < window.innerWidth) {
+      ship.style.left = ship.offsetLeft + 5 + 'px';
+  }
+  // Вызов самой себя для следующего кадра
+  requestAnimationFrame(animate);
+}
+
+// Запуск анимационного цикла
+requestAnimationFrame(animate);
 
 //Mouse ship movement
 document.addEventListener('mousemove', event => {
@@ -304,17 +347,20 @@ ship.addEventListener('touchmove', event => {
 })
 
 //Earth background
-earth.addEventListener('click', () => {
+earth.addEventListener('click', event => {
   videoSource.setAttribute('src', 'video/earth.mp4')
   videoContainer.load()
+  event.stopPropagation()
 })
 //Mars background
-mars.addEventListener('click', () => {
+mars.addEventListener('click', event => {
   videoSource.setAttribute('src', 'video/mars.mp4')
   videoContainer.load()
+  event.stopPropagation()
 })
 //Space background
-space.addEventListener('click', () => {
+space.addEventListener('click', event => {
   videoSource.setAttribute('src', 'video/galaxy.mp4')
   videoContainer.load()
+  event.stopPropagation()
 })
