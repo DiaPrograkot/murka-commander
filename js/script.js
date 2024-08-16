@@ -332,18 +332,35 @@ function animate() {
 // Запуск анимационного цикла
 requestAnimationFrame(animate);
 
-//Mouse ship movement
+// Mouse ship movement with boundary checks
 document.addEventListener('mousemove', event => {
-  ship.style.left = event.clientX - 60 + 'px'
-})
+  const containerRect = container.getBoundingClientRect();
+  const shipRect = ship.getBoundingClientRect();
+  let newLeft = event.clientX - 60;
 
-//Touch ship movement
-ship.addEventListener('touchmove', event => {
-  if (Math.floor(event.touches[0].clientX) > window.innerWidth * 0.7) {
-  } else {
-    ship.style.left = Math.floor(event.touches[0].clientX) + 'px'
+  if (newLeft < 0) {
+    newLeft = 0;
+  } else if (newLeft + shipRect.width > containerRect.width) {
+    newLeft = containerRect.width - shipRect.width;
   }
-})
+
+  ship.style.left = newLeft + 'px';
+});
+
+// Touch ship movement with boundary checks
+ship.addEventListener('touchmove', event => {
+  const containerRect = container.getBoundingClientRect();
+  const shipRect = ship.getBoundingClientRect();
+  let newLeft = Math.floor(event.touches[0].clientX);
+
+  if (newLeft < 0) {
+    newLeft = 0;
+  } else if (newLeft + shipRect.width > containerRect.width) {
+    newLeft = containerRect.width - shipRect.width;
+  }
+
+  ship.style.left = newLeft + 'px';
+});
 
 //Earth background
 earth.addEventListener('click', event => {
