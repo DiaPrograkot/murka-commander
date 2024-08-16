@@ -64,18 +64,24 @@ let removeLaser = laser => {
 
 // Remove lasers when hit the bottom of the window
 let removeLasers = () => {
-  let oldLasers = document.querySelectorAll('.laser')
-  for (let oldLaser of oldLasers) {
-    if (oldLaser.getBoundingClientRect().top >= window.innerHeight) {
-      oldLaser.remove()
-    }
+  let oldLaser = document.querySelector('.laser')
+  if (oldLaser.offsetTop <= -10) {
+    container.removeChild(oldLaser)
   }
 }
 
 // Laser movement
 let laserMovement = laser => {
-  laser.style.top = window.innerHeight + 'px'
+
   let laserInterval = setInterval(() => {
+    laser.style.top = laser.offsetTop + window.innerHeight + 'px'
+
+    if (laser.offsetTop > window.innerHeight) {
+      clearInterval(laserInterval);
+      removeLaser(laser);
+      return;
+    }
+
     if (
       laser.offsetTop <=
         asteroidElement.offsetTop + asteroidElement.offsetHeight - 10 &&
@@ -88,7 +94,7 @@ let laserMovement = laser => {
           asteroidElement.offsetLeft + asteroidElement.offsetWidth
       ) {
         removeLaser(laser)
-        // Make asteroid smaller when hit
+        //Make asteroid smaller when hit
         if (asteroidElement.offsetWidth > 80) {
           asteroidElement.style.width = asteroidElement.offsetWidth - 40 + 'px'
           asteroidElement.style.height =
@@ -99,8 +105,8 @@ let laserMovement = laser => {
           container.removeChild(asteroidElement)
           setCounter()
           asteroidFunction()
-          clearInterval(laserInterval)
         }
+        clearInterval(laserInterval)
       }
     }
   }, 10)
@@ -191,7 +197,6 @@ let gameoverFunc = () => {
   gameover.style.display = 'flex';
   showStars()
 }
-
 
 // Remove stars
 let removeStars = () => {
