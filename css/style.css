@@ -669,3 +669,7 @@ body {
   color: rgba(190, 60, 60, 0.822);
   font-size: 10rem;
 }
+
+.hidden {
+  visibility: hidden;
+}

@@ -112,6 +112,7 @@ let laserMovement = laser => {
 
 //Create laser and initial positioning
 let createLaser = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не создавать лазер
   let laser = document.createElement('img')
   laser.classList.add('laser')
   laser.setAttribute('src', 'img/bullet.svg')
@@ -123,6 +124,7 @@ let createLaser = () => {
 
 //Lasershot function
 let laserShot = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не стрелять
   createLaser()
   removeLasers()
   laserSound()
@@ -184,9 +186,12 @@ let gameoverFunc = () => {
   
   // Убедитесь, что элемент play правильно выбран из gameover
   let playButton = gameover.querySelector('.play');
-  
+  hideShip()
+ 
   playButton.addEventListener('click', e => {
     restartGame()
+    showShip()
+    
    // Прячем окно gameover
   gameover.style.display = 'none';
   });
@@ -203,6 +208,7 @@ const restartGame = () => {
 const noStars =() => {
   stars = 0;
 }
+
 
 
 
@@ -225,14 +231,20 @@ let removeStars = () => {
   
 // Button Play 
 window.addEventListener('load', () => {
+  
     const startGameButtonContainer = document.querySelector('.startgameButtonContainer');
     const playButton = startGameButtonContainer.querySelector('.play');
     noStars ()
+    hideShip()
+    
     // Показать экран "Start Game"
     startGameButtonContainer.style.display = 'flex';
+    
     // Обработка нажатия кнопки "Play" для начала игры
     playButton.addEventListener('click', () => {
-      startGameButtonContainer.style.display = 'none'; // Скрыть экран "Start Game"
+      startGameButtonContainer.style.display = 'none'; // Скрыть экран "Start Game" 
+      showShip()
+      
       // Запустить игру
       restartGame()
     });
@@ -265,7 +277,7 @@ let createAsteroid = () => {
   asteroidElement = document.createElement('img')
   asteroidElement.classList.add('asteroid')
   asteroidElement.setAttribute('draggable', 'false')
-  return asteroidElement
+ return asteroidElement
 }
 
 //Full asteroid functionality
@@ -322,20 +334,32 @@ toggleMusic.addEventListener('click', () => {
 
 //Keyboard ship movement
 document.addEventListener('keydown', event => {
+  // Обновляем размеры контейнера и корабля на случай изменения размера окна
+  const containerWidth = container.clientWidth;
+  const shipWidth = ship.offsetWidth;
+  
   if (event.key === 'ArrowLeft') {
+    // Перемещаем котика влево
     if (ship.offsetLeft - 25 >= 0) {
       ship.style.left = ship.offsetLeft - 25 + 'px';
     } else {
       ship.style.left = '0px';
     }
   }
+
   if (event.key === 'ArrowRight') {
-    ship.style.left = ship.offsetLeft + 25 + 'px'
+    // Перемещаем котика вправо
+    if (ship.offsetLeft + shipWidth + 25 <= containerWidth) {
+      ship.style.left = ship.offsetLeft + 25 + 'px';
+    } else {
+      ship.style.left = (containerWidth - shipWidth) + 'px';
+    }
   }
+
   if (event.key === ' ') {
-    console.log('Space')
+    console.log('Space');
   }
-})
+});
 
 //Mouse ship movement
 document.addEventListener('mousemove', event => {
@@ -414,5 +438,34 @@ document.addEventListener('keydown', event => {
   }
 });
 
+// Функция для скрытия котика
+let hideShip = () => {
+  ship.classList.add('hidden');
+};
 
+// Функция для показа котика
+let showShip = () => {
+  ship.classList.remove('hidden');
+};
 
+// Проверка, виден ли котик
+const isShipVisible = () => {
+  return ship.classList.contains('hidden') === false;
+};
+// Лазерный выстрел
+let laserShotNoCat = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не стрелять
+
+  createLaser();
+  removeLasers();
+  laserSound();
+};
+// Функция для воспроизведения звука лазера
+let laserSoundNo = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не воспроизводить звук
+
+  lasersound.pause();
+  lasersound.currentTime = 0;
+  lasersound.volume = 0.1;
+  lasersound.play();
+};
