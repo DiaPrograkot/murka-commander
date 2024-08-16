@@ -210,7 +210,7 @@ body {
   width: 30px;
   height: 30px;
   -webkit-transition: top 1.4s linear;
-  top: 130px;
+  top: 145px;
   transition: top 1.4s linear;
   transform: rotate(180deg);
   /* transform: rotate(90deg); */
@@ -219,6 +219,7 @@ body {
 .asteroid {
   position: absolute;
   bottom: -1rem;
+  top: +1 rem;
   height: 4rem;
   width: 4rem;
   -webkit-transition: top 6s linear;
@@ -336,7 +337,7 @@ body {
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
 }
-.startgame, .gameover {
+.gameover {
   width: 80rem;
   height: 60vh;
   background-color: rgba(255, 255, 0, 0.151);
@@ -371,7 +372,7 @@ body {
   font-size: 2rem;
   text-decoration: underline;
 }
-.startgame, .gameover:hover {
+.gameover:hover {
   border: 20px solid rgb(255, 187, 0);
 }
 
@@ -397,7 +398,7 @@ body {
   margin-right: 1rem;
 }
 
-.startplay, .play {
+.play {
   cursor: pointer;
   position: absolute;
   top: 60%;
@@ -407,7 +408,6 @@ body {
   font-size: 10rem;
   cursor: pointer;
 }
-
 .playerPlay {
   cursor: pointer;
   margin-top: 2rem;
@@ -434,7 +434,7 @@ body {
   text-align: center;
 }
 
-.startgame, .gameover:hover .play {
+.gameover:hover .play {
   color: rgba(238, 14, 14, 0.863);
   font-size: 11rem;
 }

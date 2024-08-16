@@ -213,7 +213,7 @@ body {
   width: 30px;
   height: 30px;
   -webkit-transition: top 1.4s linear;
-  top: 130px;
+  top: 145px;
   transition: top 1.4s linear;
   transform: rotate(180deg);
   /* transform: rotate(90deg); */

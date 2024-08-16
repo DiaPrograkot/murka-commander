@@ -24,7 +24,11 @@ let videoContainer = document.querySelector('.videoContainer')
 let videoSource = videoContainer.querySelector('source')
 let star
 
-let moveInterval = null;
+//для клавиатуры
+let moveLeft = false;  // Флаг для движения влево
+let moveRight = false; // Флаг для движения вправо
+let isSpacePressed = false 
+
 let asteroidElement
 let asteroidShapeNumber
 let asteroidShapeSize
@@ -115,8 +119,7 @@ let createLaser = () => {
   laser.classList.add('laser')
   laser.setAttribute('src', 'img/bullet.svg')
   container.insertAdjacentElement('beforeend', laser)
-  laser.style.left = ship.offsetLeft + 40 + 'px'
-  // laser.style.top = ship.offsetTop + 110 + 'px'
+  laser.style.left = ship.offsetLeft + 46 + 'px'
   laserMovement(laser)
 }
 
@@ -298,43 +301,72 @@ toggleMusic.addEventListener('click', () => {
   muteSpeaker.style.opacity = '1'
 })
 
-document.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    if (!moveInterval) {
-      moveInterval = setInterval(() => {
-        let direction = event.key === 'ArrowLeft' ? -8 : 8;
-        let newPosition = ship.offsetLeft + direction;
-        // Ограничиваем перемещение элемента в пределах контейнера
-        if (newPosition >= 0 && newPosition <= container.offsetWidth - ship.offsetWidth) {
-          ship.style.left = newPosition + 'px';
-        }
-      }, 20);
-    }
+//Keyboard ship movement
+document.addEventListener('keydown', event => {  
+  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
+      moveLeft = true;
+  }  
+  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
+      moveRight = true;
+  }  
+  if (event.key === ' ' && !isSpacePressed) {  
+    laserShot()
+    isSpacePressed = true
+  }  
+});
+
+document.addEventListener('keyup', event => {  
+  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
+      moveLeft = false;
+  }  
+  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
+      moveRight = false;
   }
   if (event.key === ' ') {
-    laserShot();
+    isSpacePressed = false
   }
 });
 
-document.addEventListener('keyup', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    clearInterval(moveInterval);
-    moveInterval = null;
+// Функция анимации
+function animate() {
+  const rect = ship.getBoundingClientRect();
+  if (moveLeft && rect.left > 0) {
+      ship.style.left = ship.offsetLeft - 9 + 'px';
   }
-});
+  if (moveRight && rect.right < window.innerWidth) {
+      ship.style.left = ship.offsetLeft + 9 + 'px';
+  }
+  // Вызов самой себя для следующего кадра
+  requestAnimationFrame(animate);
+}
+// Запуск анимационного цикла
+requestAnimationFrame(animate);
 
-//Mouse ship movement
+// Mouse ship movement with boundary checks
 document.addEventListener('mousemove', event => {
-  ship.style.left = event.clientX - 60 + 'px'
-})
-
-//Touch ship movement
-ship.addEventListener('touchmove', event => {
-  if (Math.floor(event.touches[0].clientX) > window.innerWidth * 0.7) {
-  } else {
-    ship.style.left = Math.floor(event.touches[0].clientX) + 'px'
+  const containerRect = container.getBoundingClientRect();
+  const shipRect = ship.getBoundingClientRect();
+  let newLeft = event.clientX - 60;
+  if (newLeft < 0) {
+    newLeft = 0;
+  } else if (newLeft + shipRect.width > containerRect.width) {
+    newLeft = containerRect.width - shipRect.width;
   }
-})
+  ship.style.left = newLeft + 'px';
+});
+
+// Touch ship movement with boundary checks
+ship.addEventListener('touchmove', event => {
+  const containerRect = container.getBoundingClientRect();
+  const shipRect = ship.getBoundingClientRect();
+  let newLeft = Math.floor(event.touches[0].clientX);
+  if (newLeft < 0) {
+    newLeft = 0;
+  } else if (newLeft + shipRect.width > containerRect.width) {
+    newLeft = containerRect.width - shipRect.width;
+  }
+  ship.style.left = newLeft + 'px';
+});
 
 //Earth background
 earth.addEventListener('click', () => {
