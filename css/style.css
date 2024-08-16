@@ -54,6 +54,7 @@ body {
 }
 
 .ship {
+  display: none;
   position: absolute;
   top: 6%;
   left: 50%;

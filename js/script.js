@@ -38,7 +38,7 @@ let showStars = () => {
     star.setAttribute('src', 'img/paw.png')
     star.classList.add('star')
     lives.append(star)
-    stars--
+    setTimeout(stars--, 4);
   }
   stars = 3
 }
@@ -179,6 +179,7 @@ let isGameRunning = false; // Флаг, показывающий, идет ли 
 play.addEventListener('click', () => {
   isGameRunning = true; // Устанавливаем флаг, что игра началась
   gameover.style.display = 'none'; // Скрываем экран "Game Over"
+  ship.style.display = 'block'; // Показываем корабль
   counter.textContent = 0; // Сбрасываем счетчик
   startGame(); // Запускаем игру
 });
@@ -186,8 +187,11 @@ play.addEventListener('click', () => {
 let gameoverFunc = () => {
   isGameRunning = false; // Останавливаем игру
   stars = 3
+  ship.style.display = 'none';
   gameover.style.display = 'flex';
+  showStars()
 }
+
 
 // Remove stars
 let removeStars = () => {
@@ -222,7 +226,7 @@ let removeAsteroid = asteroid => {
   setTimeout(() => {
     timeoutFunc(asteroid);
     asteroidActive = false; // Сбрасываем флаг активности после удаления астероида
-    asteroidFunction(); // Вызываем функцию снова для создания следующего астероида
+    setTimeout(asteroidFunction, 1000);// Вызываем функцию снова для создания следующего астероида
   }, 3000);
 }
 
@@ -296,31 +300,18 @@ toggleMusic.addEventListener('click', () => {
 
 let isMovingLeft = false;
 let isMovingRight = false;
-// Keyboard ship movement with boundary checks
-document.addEventListener('keydown', event => {
-  const containerRect = container.getBoundingClientRect();
-  const shipRect = ship.getBoundingClientRect();
+let speed = 9; // Скорость движения корабля
 
+// Обработка нажатия клавиш
+document.addEventListener('keydown', event => {
   if (event.key === 'ArrowLeft') {
-    let newLeft = ship.offsetLeft - 40;
     isMovingLeft = true;
-    if (newLeft >= 0) {
-      ship.style.left = newLeft + 'px';
-    }
   }
   if (event.key === 'ArrowRight') {
-    let newLeft = ship.offsetLeft + 40;
     isMovingRight = true;
-    if (newLeft + shipRect.width <= containerRect.width) {
-      ship.style.left = newLeft + 'px';
-    }
   }
-  // Fire laser when down arrow is pressed
   if (event.key === 'ArrowDown') {
     laserShot();
-  }
-  if (event.key === ' ') {
-    console.log('Space');
   }
 });
 
@@ -338,14 +329,14 @@ const moveShip = () => {
   const shipRect = ship.getBoundingClientRect();
 
   if (isMovingLeft) {
-    let newLeft = ship.offsetLeft - 15; // Плавное движение влево
+    let newLeft = ship.offsetLeft - speed; // Плавное движение влево
     if (newLeft >= 0) {
       ship.style.left = newLeft + 'px';
     }
   }
 
   if (isMovingRight) {
-    let newLeft = ship.offsetLeft + 15; // Плавное движение вправо
+    let newLeft = ship.offsetLeft + speed; // Плавное движение вправо
     if (newLeft + shipRect.width <= containerRect.width) {
       ship.style.left = newLeft + 'px';
     }
