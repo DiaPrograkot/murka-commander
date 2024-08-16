@@ -34,6 +34,7 @@ let stars = 3
 //для клавиатуры
 let moveLeft = false;  // Флаг для движения влево
 let moveRight = false; // Флаг для движения вправо
+let isSpacePressed = false
 
 //Display stars
 let showStars = () => {
@@ -287,8 +288,6 @@ toggleMusic.addEventListener('click', event => {
 
   event.stopPropagation()
 })
-
-let isSpacePressed = false
 
 //Keyboard ship movement
 document.addEventListener('keydown', event => {  
