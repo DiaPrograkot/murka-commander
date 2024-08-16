@@ -399,3 +399,4 @@ space.addEventListener('click', () => {
   videoSource.setAttribute('src', 'video/galaxy.mp4');
   videoContainer.load();
 })
+
