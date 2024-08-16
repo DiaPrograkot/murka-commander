@@ -320,10 +320,10 @@ document.addEventListener('keyup', event => {
 function animate() {
   const rect = ship.getBoundingClientRect();
   if (moveLeft && rect.left > 0) {
-      ship.style.left = ship.offsetLeft - 5 + 'px';
+      ship.style.left = ship.offsetLeft - 9 + 'px';
   }
   if (moveRight && rect.right < window.innerWidth) {
-      ship.style.left = ship.offsetLeft + 5 + 'px';
+      ship.style.left = ship.offsetLeft + 9 + 'px';
   }
   // Вызов самой себя для следующего кадра
   requestAnimationFrame(animate);
