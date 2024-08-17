@@ -183,10 +183,46 @@ let setAsteroidShape = asteroid => {
 //Gameover Popup
 let gameoverFunc = () => {
   gameover.style.display = 'flex'
+  ship.style.display = 'none'
   play.addEventListener('click', e => {
     location.reload()
   })
+  document.removeEventListener('click', laserShot)
+  isGameOver = true
 }
+
+//before start
+ship.style.display = 'none'
+isGameOver = false
+
+//start 
+let startGame = () => {
+  showStars()
+  gameover.style.display = 'flex'
+  play.addEventListener('click', event => {
+    gameover.style.display = 'none'
+    ship.style.display = 'flex'
+    asteroidFunction()
+    event.stopPropagation()
+    document.addEventListener('click', laserShot)
+  })
+  let nameStorage = localStorage.getItem('name')
+  if (nameStorage) {
+    playerLabel.textContent = nameStorage
+} else {
+  playerNameContainer.style.display = 'flex'
+  playerPlay.addEventListener('click', () => {
+    playerName = playerInput.value
+    if (playerName) {
+      localStorage.setItem('name', playerName)
+      playerLabel.textContent = playerName
+      playerNameContainer.style.display = 'none'
+
+    }
+  })
+}
+}
+startGame()
 
 //Removes stars
 let removeStars = () => {
@@ -231,42 +267,13 @@ let createAsteroid = () => {
 
 //Full asteroid functionality
 let asteroidFunction = () => {
+  if (isGameOver) return
+
   let asteroid = createAsteroid()
   container.append(asteroid)
   setAsteroidShape(asteroid)
   setAsteroidPosition(asteroid)
   removeAsteroid(asteroid)
-}
-
-showStars()
-let nameStorage = localStorage.getItem('name')
-console.log(nameStorage)
-if (nameStorage) {
-  gameover.style.display = 'flex'
-  play.addEventListener('click', e => {
-    gameover.style.display = 'none'
-    asteroidFunction()
-    document.addEventListener('click', () => {
-      laserShot()
-    })
-  })
-  playerLabel.textContent = nameStorage
-
-} else {
-  playerNameContainer.style.display = 'flex'
-  playerPlay.addEventListener('click', () => {
-    playerName = playerInput.value
-    if (playerName) {
-      localStorage.setItem('name', playerName)
-      playerLabel.textContent = playerName
-      playerNameContainer.style.display = 'none'
-      asteroidFunction()
-      //Mouse laser shot event listener
-      document.addEventListener('click', () => {
-        laserShot()
-      })
-    }
-  })
 }
 
 //Music playback start after 3 seconds
