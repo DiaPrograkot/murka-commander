@@ -304,20 +304,29 @@ if (nameStorage) {
 }
 
 //Music playback start after 3 seconds
-let musicPlay = setTimeout(() => {
-  audio.play()
-  audio.volume = 0.1
-}, 4000)
+let musicPlay = setTimeout(async () => {
+  try {
+    await audio.play();
+    audio.volume = 0.1;
+  } catch (error) {
+    console.error('Error playing audio:', error);
+  }
+}, 4000);
 
 //Toggle music
-toggleMusic.addEventListener('click', () => {
-  if (audio.paused) {
-    muteSpeaker.style.opacity = '0'
-    return audio.play()
-  }
+toggleMusic.addEventListener('click', async () => {
+  try {
+    if (audio.paused) {
+      muteSpeaker.style.opacity = '0'
+      await audio.play();
+    } else {
   audio.pause()
   audio.currentTime = 0
   muteSpeaker.style.opacity = '1'
+    }
+  } catch (error){
+    console.error('Error playing audio:', error);
+  }
 })
 
 //Keyboard ship movement
