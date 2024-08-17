@@ -129,6 +129,7 @@ let createLaser = () => {
 
 //Lasershot function
 let laserShot = () => {
+  if (!isGameRunning) return; // Проверяем, идет ли игра
   createLaser()
   removeLasers()
   laserSound()
@@ -321,6 +322,7 @@ toggleMusic.addEventListener('click', () => {
 
 //Keyboard ship movement
 document.addEventListener('keydown', event => {  
+  if (!isGameRunning) return; // Проверяем, идет ли игра
   if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
       moveLeft = true;
   }  
