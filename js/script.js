@@ -68,7 +68,7 @@ let laserSound = () => {
 
 //Remove laser when asteroid is hit
 let removeLaser = laser => {
-  if (laser) {
+  if (laser && container.contains(laser)) {
     container.removeChild(laser)
   }
 }
@@ -314,20 +314,19 @@ let musicPlay = setTimeout(async () => {
 }, 4000);
 
 //Toggle music
-toggleMusic.addEventListener('click', async () => {
-  try {
+
+  toggleMusic.addEventListener('click', () => {
     if (audio.paused) {
-      muteSpeaker.style.opacity = '0'
-      await audio.play();
+        audio.play().catch(error => {
+            console.log('Error playing audio:', error);
+        });
+        muteSpeaker.style.opacity = '0';
     } else {
-  audio.pause()
-  audio.currentTime = 0
-  muteSpeaker.style.opacity = '1'
+        audio.pause();
+        audio.currentTime = 0;
+        muteSpeaker.style.opacity = '1';
     }
-  } catch (error){
-    console.error('Error playing audio:', error);
-  }
-})
+});
 
 //Keyboard ship movement
 document.addEventListener('keydown', event => {  
@@ -412,3 +411,9 @@ space.addEventListener('click', () => {
   videoSource.setAttribute('src', 'video/galaxy.mp4')
   videoContainer.load()
 })
+//добавила: аудио начинается только после того, как пользователь кликнет по странице
+document.addEventListener('click', () => {
+  audio.play().catch(error => {
+      console.log('Error playing audio:', error);
+  });
+});
