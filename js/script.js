@@ -67,7 +67,8 @@ let removeLaser = laser => {
   if (laser) {
     container.removeChild(laser)
   }
-}
+} 
+
 //Remove lasers when hit the bottom of the window
 let removeLasers = () => {
   let oldLasers = document.querySelectorAll('.laser')
@@ -115,6 +116,7 @@ let laserMovement = laser => {
 
 //Create laser and initial positioning
 let createLaser = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не создавать лазер
   let laser = document.createElement('img')
   laser.classList.add('laser')
   laser.setAttribute('src', 'img/bullet.svg')
@@ -125,6 +127,7 @@ let createLaser = () => {
 
 //Lasershot function
 let laserShot = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не стрелять
   createLaser()
   removeLasers()
   laserSound()
@@ -183,14 +186,35 @@ let setAsteroidShape = asteroid => {
 //Gameover Popup
 let gameoverFunc = () => {
   gameover.style.display = 'flex'
-  play.addEventListener('click', e => {
-    //Вместо перезагрузки страницы (дублирует кнопку старт после перезагрузки) сбрасываем жизни и счёт и вызываем показ новых
-    stars = 3
-    counter.textContent = '0'
-    showStars()
-    gameover.style.display = 'none'
-  })
+  hideShip()
+  hideAllAsteroid()
+  stopAsteroids()
+  play.addEventListener('click', restartGame); // Перенесли наружу, чтобы не добавлялось повторно
 }
+// Функция для перезапуска игры
+let restartGame = (e) => {
+  stars = 3;
+  counter.textContent = '0';
+  showStars();
+  showShip();
+  gameover.style.display = 'none';
+ asteroidFunction()
+}
+// Функция для остановки движения астероидов
+let stopAsteroids = () => {
+  // Логика остановки астероидов. Например, можно приостановить анимацию или прекратить их появление.
+  let asteroids = document.querySelectorAll('.asteroid');
+  asteroids.forEach(asteroid => {
+    asteroid.style.animationPlayState = 'paused'; // Приостановка анимации
+  });
+}
+// Функция для скрытия всех астероидов
+let hideAllAsteroids = () => {
+  let asteroids = document.querySelectorAll('.asteroid');
+  asteroids.forEach(asteroid => asteroid.style.display = 'none');
+}
+// Привязываем обработчик к кнопке "Play" один раз
+play.addEventListener('click', restartGame);
 
 //Removes stars
 let removeStars = () => {
@@ -243,11 +267,51 @@ let asteroidFunction = () => {
   removeAsteroid(asteroid)
 }
 
+
+// Функция для скрытия котика
+let hideShip = () => {
+  ship.classList.add('hidden');
+};
+
+
+// Функция для показа котика
+let showShip = () => {
+  ship.classList.remove('hidden');
+};
+
+
+// Проверка, виден ли котик
+const isShipVisible = () => {
+  return ship.classList.contains('hidden') === false;
+};
+// Лазерный выстрел
+let laserOut = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не стрелять
+
+
+  createLaser();
+  removeLasers();
+  laserSound();
+};
+// Функция для воспроизведения звука лазера
+let stopLaserSound = () => {
+  if (!isShipVisible()) return; // Если котик невидим, не воспроизводить звук
+
+
+  lasersound.pause();
+  lasersound.currentTime = 0;
+  lasersound.volume = 0.1;
+  lasersound.play();
+};
+
+
 // Окно в начале игры, запускающая её
 let startgameFunc = () => {
   startgame.style.display = 'flex'
+  hideShip()
   startplay.addEventListener('click', () => {
     startgame.style.display = 'none'
+    showShip()
     startGame()
   })
 }
