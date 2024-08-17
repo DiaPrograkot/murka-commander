@@ -92,50 +92,54 @@ let removeLasers = () => {
 let laserMovement = laser => {
   laser.style.top = window.innerHeight + 'px';
   let laserInterval = setInterval(() => {
-  let asteroidId = laser.getAttribute('data-asteroid-id'); // Получаем идентификатор астероида
-  let currentAsteroid = document.querySelector('.asteroid[data-id="' + asteroidId + '"]'); // Поиск астероида по ID
-  if (currentAsteroid) {
-    // Определяем границы лазера
-    let laserRect = laser.getBoundingClientRect();
-    // Определяем границы астероида
-    let asteroidRect = currentAsteroid.getBoundingClientRect();
-    // Проверка пересечения прямоугольников
-    if (laserRect.top < asteroidRect.bottom &&
-        laserRect.bottom > asteroidRect.top &&
-        laserRect.left < asteroidRect.right &&
-        laserRect.right > asteroidRect.left) {
+    let asteroidId = laser.getAttribute('data-asteroid-id'); // Получаем идентификатор астероида
+    let currentAsteroid = document.querySelector('.asteroid[data-id="' + asteroidId + '"]'); // Поиск астероида по ID
 
+    if (currentAsteroid) {
+      if (
+        laser.offsetTop <=
+          currentAsteroid.offsetTop + currentAsteroid.offsetHeight - 10 &&
+        laser.offsetTop >= currentAsteroid.offsetTop
+      ) {
+        if (
+          laser.offsetLeft >
+            currentAsteroid.offsetLeft - currentAsteroid.offsetWidth / 2 &&
+          laser.offsetLeft <
+            currentAsteroid.offsetLeft + currentAsteroid.offsetWidth
+        ) {
           removeLaser(laser);
-
-      if (container.contains(currentAsteroid)) {
-        if (currentAsteroid.offsetWidth > 80) {
-          currentAsteroid.style.width = currentAsteroid.offsetWidth - 40 + 'px';
-          currentAsteroid.style.height = currentAsteroid.offsetHeight - 40 + 'px';
-        } else {
-          crash.play();
-          crash.volume = 0.1;
-          container.removeChild(currentAsteroid);
-          setCounter();
-          asteroidFunction(); // Создаем новый астероид
+          if (container.contains(currentAsteroid)) {
+            if (currentAsteroid.offsetWidth > 80) {
+              currentAsteroid.style.width = currentAsteroid.offsetWidth - 40 + 'px';
+              currentAsteroid.style.height = currentAsteroid.offsetHeight - 40 + 'px';
+            } else {
+              crash.play();
+              crash.volume = 0.1;
+              container.removeChild(currentAsteroid);
+              setCounter();
+              asteroidFunction();
+            }
+            clearInterval(laserInterval);
+          }
         }
-        clearInterval(laserInterval);
       }
     }
-    }
-  }, 10);
+  }, 50);
 }
+
+
 
 // Create laser
 let createLaser = (asteroidId) => {
   let laser = document.createElement('img');
   laser.classList.add('laser');
   laser.setAttribute('src', 'img/bullet.svg');
-  container.insertAdjacentElement('beforeend', laser);
+  container.append(laser);
   laser.setAttribute('data-asteroid-id', asteroidId); // Присваиваем идентификатор астероида
-  container.insertAdjacentElement('beforeend', laser);
-  laser.style.left = ship.offsetLeft + 46 + 'px';
+  laser.style.left = `${ship.offsetLeft + 46}px`;
   laser.style.visibility = 'visible';
   laserMovement(laser);
+  
 };
 
 // Laser shot function
