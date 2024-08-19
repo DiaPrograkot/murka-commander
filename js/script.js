@@ -55,20 +55,21 @@ let showStars = () => {
 }
 
 let setCounter = () => {
-  counter.textContent = parseInt(counter.textContent) + 1
-}
+  counter.textContent = parseInt(counter.textContent) + 1;
 
+};
 //Plays laser sound
 let laserSound = () => {
-  lasersound.pause()
+  if (lasersound.paused) { // Проверяем, не воспроизводится ли звук в данный момент
   lasersound.currentTime = 0
   lasersound.volume = 0.1
   lasersound.play()
+  }
 }
 
 //Remove laser when asteroid is hit
 let removeLaser = laser => {
-  if (laser && container.contains(laser)) {
+  if (laser) {
     container.removeChild(laser)
   }
 }
@@ -249,11 +250,15 @@ let createAsteroid = () => {
 //Full asteroid functionality
 let asteroidFunction = () => {
   if (!asteroidActive) return; // Если астероиды неактивны, не запускаем функцию
-  let asteroid = createAsteroid()
-  container.append(asteroid)
-  setAsteroidShape(asteroid)
-  setAsteroidPosition(asteroid)
-  removeAsteroid(asteroid)
+  let asteroid = createAsteroid();
+  container.append(asteroid);
+  setAsteroidShape(asteroid);
+  setAsteroidPosition(asteroid);
+
+  // Сбрасываем флаг на случай нового астероида
+  hasHitAsteroid = false;
+
+  removeAsteroid(asteroid);
 }
 
 // Окно в начале игры, запускающая её
@@ -304,29 +309,21 @@ if (nameStorage) {
 }
 
 //Music playback start after 3 seconds
-let musicPlay = setTimeout(async () => {
-  try {
-    await audio.play();
-    audio.volume = 0.1;
-  } catch (error) {
-    console.error('Error playing audio:', error);
-  }
-}, 4000);
+let musicPlay = setTimeout(() => {
+  audio.play()
+  audio.volume = 0.1
+}, 4000)
 
 //Toggle music
-
-  toggleMusic.addEventListener('click', () => {
-    if (audio.paused) {
-        audio.play().catch(error => {
-            console.log('Error playing audio:', error);
-        });
-        muteSpeaker.style.opacity = '0';
-    } else {
-        audio.pause();
-        audio.currentTime = 0;
-        muteSpeaker.style.opacity = '1';
-    }
-});
+toggleMusic.addEventListener('click', () => {
+  if (audio.paused) {
+    muteSpeaker.style.opacity = '0'
+    return audio.play()
+  }
+  audio.pause()
+  audio.currentTime = 0
+  muteSpeaker.style.opacity = '1'
+})
 
 //Keyboard ship movement
 document.addEventListener('keydown', event => {  
@@ -411,9 +408,5 @@ space.addEventListener('click', () => {
   videoSource.setAttribute('src', 'video/galaxy.mp4')
   videoContainer.load()
 })
-//добавила: аудио начинается только после того, как пользователь кликнет по странице
-document.addEventListener('click', () => {
-  audio.play().catch(error => {
-      console.log('Error playing audio:', error);
-  });
-});
+
+
