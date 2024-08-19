@@ -1,3 +1,4 @@
+// Определение переменных
 let container = document.querySelector('.container');
 let playerNameContainer = document.querySelector('.playerNameContainer');
 let playerInput = document.querySelector('.playerInput');
@@ -24,19 +25,16 @@ let videoContainer = document.querySelector('.videoContainer');
 let videoSource = videoContainer.querySelector('source');
 let star;
 
-let moveInterval = null;
-let asteroidElement;
-let asteroidShapeNumber;
-let asteroidShapeSize;
-let asteroidShape;
-let asteroidX;
-let asteroidY;
+let loss = false;
+// Переменные состояния
+let moveLeft = false;
+let moveRight = false;
+let isSpacePressed = false;
+let canShoot = true;
+let isLaserPlaying = false;
 let stars = 3;
 
-// Flag to prevent overlapping play/pause calls
-let isLaserPlaying = false;
-
-// Display stars
+// Отображение звезд
 let showStars = () => {
   lives.innerHTML = '';
   for (let i = 0; i < stars; i++) {
@@ -47,188 +45,207 @@ let showStars = () => {
   }
 };
 
-// Update counter
+// Обновление счетчика
 let setCounter = () => {
   counter.textContent = parseInt(counter.textContent) + 1;
 };
 
-// Play laser sound
+// Воспроизведение звука лазера
 let laserSound = async () => {
-  if (isLaserPlaying) return; // Prevent overlapping plays
+  if (isLaserPlaying) return;
 
   isLaserPlaying = true;
   try {
     if (!lasersound.paused) {
-      lasersound.pause(); // Stop the sound if it is already playing
-      lasersound.currentTime = 0; // Reset time to the start
+      lasersound.pause();
+      lasersound.currentTime = 0;
     }
     lasersound.volume = 0.1;
-    await lasersound.play(); // Play sound
+    await lasersound.play();
   } catch (error) {
     console.error("Ошибка воспроизведения лазера:", error);
   } finally {
-    isLaserPlaying = false; // Allow next play
+    isLaserPlaying = false;
   }
 };
 
-// Remove laser
+// Удаление лазера
 let removeLaser = laser => {
   if (laser && laser.parentNode === container) {
     container.removeChild(laser);
   }
 };
 
-// Remove lasers at the bottom of the window
+// Удаление лазеров внизу окна
 let removeLasers = () => {
-  let oldLasers = document.querySelectorAll('.laser');
-  oldLasers.forEach(oldLaser => {
-    if (oldLaser.getBoundingClientRect().top >= window.innerHeight) {
-      oldLaser.remove();
+  document.querySelectorAll('.laser').forEach(laser => {
+    if (laser.getBoundingClientRect().top >= window.innerHeight) {
+      removeLaser(laser);
     }
   });
 };
 
-// Laser movement
+// Движение лазера
 let laserMovement = laser => {
   laser.style.top = window.innerHeight + 'px';
   let laserInterval = setInterval(() => {
-    let asteroidId = laser.getAttribute('data-asteroid-id'); // Получаем идентификатор астероида
-    let currentAsteroid = document.querySelector('.asteroid[data-id="' + asteroidId + '"]'); // Поиск астероида по ID
+    let asteroids = document.querySelectorAll('.asteroid');
 
-    if (currentAsteroid) {
+    asteroids.forEach(currentAsteroid => {
       if (
-        laser.offsetTop <=
-          currentAsteroid.offsetTop + currentAsteroid.offsetHeight - 10 &&
-        laser.offsetTop >= currentAsteroid.offsetTop
+        laser.offsetTop <= currentAsteroid.offsetTop + currentAsteroid.offsetHeight - 10 &&
+        laser.offsetTop >= currentAsteroid.offsetTop &&
+        laser.offsetLeft > currentAsteroid.offsetLeft - currentAsteroid.offsetWidth / 2 &&
+        laser.offsetLeft < currentAsteroid.offsetLeft + currentAsteroid.offsetWidth
       ) {
-        if (
-          laser.offsetLeft >
-            currentAsteroid.offsetLeft - currentAsteroid.offsetWidth / 2 &&
-          laser.offsetLeft <
-            currentAsteroid.offsetLeft + currentAsteroid.offsetWidth
-        ) {
-          removeLaser(laser);
-          if (container.contains(currentAsteroid)) {
-            if (currentAsteroid.offsetWidth > 80) {
-              currentAsteroid.style.width = currentAsteroid.offsetWidth - 40 + 'px';
-              currentAsteroid.style.height = currentAsteroid.offsetHeight - 40 + 'px';
-            } else {
-              crash.play();
-              crash.volume = 0.1;
-              container.removeChild(currentAsteroid);
-              setCounter();
-              asteroidFunction();
-            }
-            clearInterval(laserInterval);
+        removeLaser(laser);
+        if (container.contains(currentAsteroid)) {
+          if (currentAsteroid.offsetWidth > 80) {
+            currentAsteroid.style.width = (currentAsteroid.offsetWidth - 40) + 'px';
+            currentAsteroid.style.height = (currentAsteroid.offsetHeight - 40) + 'px';
+          } else {
+            crash.play();
+            crash.volume = 0.1;
+            container.removeChild(currentAsteroid);
+            setCounter();
+            asteroidFunction();
           }
         }
+        clearInterval(laserInterval); // Прекратить движение лазера после попадания
       }
-    }
+    });
   }, 50);
-}
+};
 
 
-
-// Create laser
+// Создание лазера
 let createLaser = (asteroidId) => {
   let laser = document.createElement('img');
   laser.classList.add('laser');
   laser.setAttribute('src', 'img/bullet.svg');
   container.append(laser);
-  laser.setAttribute('data-asteroid-id', asteroidId); // Присваиваем идентификатор астероида
+  laser.setAttribute('data-asteroid-id', asteroidId);
   laser.style.left = `${ship.offsetLeft + 46}px`;
   laser.style.visibility = 'visible';
   laserMovement(laser);
-  
 };
 
-// Laser shot function
+// Обработка стрельбы
 let laserShot = () => {
-  let asteroidId = document.querySelector('.asteroid').getAttribute('data-id');
-  createLaser(asteroidId);
-  removeLasers();
-  laserSound(); // Updated function to handle sound playback
+  if (canShoot) {
+    let asteroidId = document.querySelector('.asteroid')?.getAttribute('data-id');
+    if (asteroidId) {
+      createLaser(asteroidId);
+      removeLasers();
+      laserSound();
+      canShoot = false;
+      setTimeout(() => { canShoot = true; }, 1); // через 1 мс игрок сможет снова стрелять
+    }
+  }
 };
 
-// Set asteroid position
+// Установка позиции астероида
 let setAsteroidPosition = asteroid => {
   let maxWidth = container.offsetWidth - asteroid.offsetWidth;
   let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1);
   asteroid.style.left = randomPosition + 'px';
   setTimeout(() => {
-    asteroid.style.bottom = window.innerHeight + 140 + 'px';
+    asteroid.style.bottom = window.innerHeight + 155 + 'px';
   }, 1);
 };
 
-// Set asteroid shape
+// Установка формы астероида
 let setAsteroidShape = asteroid => {
-  asteroidShapeNumber = Math.floor(Math.random() * 9) + 1;
-  asteroidShapeSize = Math.floor(Math.random() * 16) + 4;
-  switch (asteroidShapeNumber) {
-    case 1:
-      asteroidShape = 'img/asteroid-purple.svg';
-      break;
-    case 2:
-      asteroidShape = 'img/green-asteroid.svg';
-      break;
-    case 3:
-      asteroidShape = 'img/orange-meteorite.svg';
-      break;
-    case 4:
-      asteroidShape = 'img/asteroid-black.svg';
-      break;
-    case 5:
-      asteroidShape = 'img/rock.svg';
-      break;
-    case 6:
-      asteroidShape = 'img/meteorite-white.svg';
-      break;
-    case 7:
-      asteroidShape = 'img/lightorange-asteroid.svg';
-      break;
-    case 8:
-      asteroidShape = 'img/rocky-asteroid.svg';
-      break;
-    case 9:
-      asteroidShape = 'img/purple-asteroid.svg';
-      break;
-    default:
-      break;
-  }
-  asteroid.setAttribute('src', asteroidShape);
-  asteroid.style.height = `${asteroidShapeSize}rem`;
-  asteroid.style.width = `${asteroidShapeSize}rem`;
+  let shapes = [
+    'img/asteroid-purple.svg',
+    'img/green-asteroid.svg',
+    'img/orange-meteorite.svg',
+    'img/asteroid-black.svg',
+    'img/rock.svg',
+    'img/meteorite-white.svg',
+    'img/lightorange-asteroid.svg',
+    'img/rocky-asteroid.svg',
+    'img/purple-asteroid.svg'
+  ];
+  let size = Math.floor(Math.random() * 16) + 4;
+  let shape = shapes[Math.floor(Math.random() * shapes.length)];
+  asteroid.setAttribute('src', shape);
+  asteroid.style.height = `${size}rem`;
+  asteroid.style.width = `${size}rem`;
 };
 
-// Handle keyboard shot
-let laserShotKey = event => {
-  if (event.key === ' ') {
+// Обработка клавиатуры для стрельбы
+let handleLaserShotKey = (event) => {
+  if (event.key === ' ' && !isSpacePressed) {
     laserShot();
+    isSpacePressed = true;
+    setTimeout(() => {
+      isSpacePressed = false; 
+    }, 1);
   }
 };
 
-// Gameover Popup
-let gameoverFunc = () => {
-  gameover.style.display = 'flex';
-  ship.style.visibility = 'hidden';
-  document.removeEventListener('click', laserShot);
-  document.removeEventListener('keydown', laserShotKey);
-  play.removeEventListener('click', startNewGame);
-  play.addEventListener('click', startNewGame);
+document.addEventListener('keydown', event => {  
+  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
+    moveLeft = true;
+  }  
+  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
+    moveRight = true;
+  }  
+});
+
+document.addEventListener('keyup', event => {  
+  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
+    moveLeft = false;
+  }  
+  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
+    moveRight = false;
+  }  
+});
+
+// Анимация
+function animate() {
+  const rect = ship.getBoundingClientRect();
+  if (moveLeft && rect.left > 0) {
+    ship.style.left = ship.offsetLeft - 9 + 'px';
+  }
+  if (moveRight && rect.right < window.innerWidth) {
+    ship.style.left = ship.offsetLeft + 9 + 'px';
+  }
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// Движение корабля мышью
+const moveShip = (clientX) => {
+  const containerRect = container.getBoundingClientRect();
+  const shipRect = ship.getBoundingClientRect();
+  let newLeft = clientX - 60;
+  if (newLeft < 0) newLeft = 0;
+  else if (newLeft + shipRect.width > containerRect.width) newLeft = containerRect.width - shipRect.width;
+  ship.style.left = newLeft + 'px';
 };
 
-// Restart game
-let startNewGame = () => {
-  ship.style.visibility = 'visible';
-  stars = 3;
-  counter.textContent = '0';
-  showStars();
-  gameover.style.display = 'none';
-  document.addEventListener('click', laserShot);
-  document.addEventListener('keydown', laserShotKey);
-};
+document.addEventListener('mousemove', event => moveShip(event.clientX));
+ship.addEventListener('touchmove', event => moveShip(event.touches[0].clientX));
 
-// Remove stars
+// Изменение фона видео
+earth.addEventListener('click', () => {
+  videoSource.setAttribute('src', 'video/earth.mp4');
+  videoContainer.load();
+});
+
+mars.addEventListener('click', () => {
+  videoSource.setAttribute('src', 'video/mars.mp4');
+  videoContainer.load();
+});
+
+space.addEventListener('click', () => {
+  videoSource.setAttribute('src', 'video/galaxy.mp4');
+  videoContainer.load();
+});
+
+// Удаление звезд
 let removeStars = () => {
   if (stars > 1) {
     lives.removeChild(lives.querySelector('.star'));
@@ -240,10 +257,9 @@ let removeStars = () => {
   }
 };
 
-// Timeout function for asteroid
+// Функция тайм-аута для астероида
 let timeoutFunc = asteroid => {
-  let asteroidPosition = asteroid.offsetTop;
-  if (asteroidPosition <= -80) {
+  if (asteroid.offsetTop <= -80) {
     if (container.contains(asteroid)) {
       container.removeChild(asteroid);
       removeStars();
@@ -254,38 +270,77 @@ let timeoutFunc = asteroid => {
   }
 };
 
-// Remove asteroid
+// Удаление астероида
 let removeAsteroid = asteroid => {
   setTimeout(() => timeoutFunc(asteroid), 3000);
 };
 
-// Create asteroid
+// Создание астероида
 let createAsteroid = () => {
-  asteroidElement = document.createElement('img');
+  let asteroidElement = document.createElement('img');
   asteroidElement.classList.add('asteroid');
   asteroidElement.setAttribute('draggable', 'false');
   return asteroidElement;
 };
 
-// Full asteroid functionality
+// Полная функциональность астероида
 let asteroidFunction = () => {
+  if (!loss){
   let asteroid = createAsteroid();
-  let asteroidId = Date.now(); // Генерация уникального идентификатора
-  asteroid.setAttribute('data-id', asteroidId); // Присваиваем идентификатор элементу
+  let asteroidId = Date.now();
+  asteroid.setAttribute('data-id', asteroidId);
   container.append(asteroid);
   setAsteroidShape(asteroid);
   setAsteroidPosition(asteroid);
   removeAsteroid(asteroid);
-  return asteroidId; // Возвращаем идентификатор
+  return asteroidId;
+  }
 };
 
-// Start game popup
+// Начало игры
+let startGame = () => {
+  ship.style.visibility = 'visible';
+  asteroidFunction();
+  document.addEventListener('click', laserShot);
+  document.addEventListener('keydown', handleLaserShotKey);
+  document.addEventListener('keyup', handleLaserShotKey);
+};
+
+// Окончание игры
+let gameoverFunc = () => {
+  loss = true
+  gameover.style.display = 'flex';
+  ship.style.visibility = 'hidden';
+  isSpacePressed = false;
+  canShoot = false;
+  document.removeEventListener('keydown', handleLaserShotKey);
+  document.removeEventListener('keyup', handleLaserShotKey);
+  document.removeEventListener('click', laserShot);
+  play.addEventListener('click', startNewGame);
+};
+
+// Начало новой игры
+let startNewGame = () => {
+  loss = false
+  asteroidFunction();
+  ship.style.visibility = 'visible';
+  stars = 3;
+  counter.textContent = '0';
+  showStars();
+  gameover.style.display = 'none';
+  isSpacePressed = false;
+  canShoot = true;
+  document.addEventListener('click', laserShot);
+  document.addEventListener('keydown', handleLaserShotKey);
+  document.addEventListener('keyup', handleLaserShotKey);
+};
+
+// Стартовая заставка игры
 let startgameFunc = () => {
   startgame.style.display = 'flex';
   startplay.addEventListener('click', () => {
     startgame.style.display = 'none';
     startGame();
-    // Music playback start after user interaction
     document.addEventListener('click', () => {
       audio.play().catch(error => {
         console.error("Ошибка воспроизведения музыки:", error);
@@ -294,15 +349,7 @@ let startgameFunc = () => {
   });
 };
 
-// Start game
-let startGame = () => {
-  ship.style.visibility = 'visible';
-  asteroidFunction();
-  document.addEventListener('click', laserShot);
-  document.addEventListener('keydown', laserShotKey);
-};
-
-// Show stars and start game based on player name
+// Проверка имени игрока и запуск игры
 showStars();
 let nameStorage = localStorage.getItem('name');
 if (nameStorage) {
@@ -321,7 +368,7 @@ if (nameStorage) {
   });
 }
 
-// Music playback start after 3 seconds
+// Управление музыкой
 let musicPlay = () => {
   document.addEventListener('click', () => {
     audio.play().catch(error => {
@@ -331,7 +378,6 @@ let musicPlay = () => {
 };
 setTimeout(musicPlay, 3000);
 
-// Toggle music
 toggleMusic.addEventListener('click', () => {
   if (audio.paused) {
     muteSpeaker.style.opacity = '0';
@@ -344,56 +390,4 @@ toggleMusic.addEventListener('click', () => {
     audio.pause();
     muteSpeaker.style.opacity = '1';
   }
-});
-
-// Ship movement with arrow keys
-document.addEventListener('keydown', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    if (!moveInterval) {
-      moveInterval = setInterval(() => {
-        let direction = event.key === 'ArrowLeft' ? -8 : 8;
-        let newPosition = ship.offsetLeft + direction;
-        if (newPosition >= 0 && newPosition <= container.offsetWidth - ship.offsetWidth) {
-          ship.style.left = newPosition + 'px';
-        }
-      }, 20);
-    }
-  }
-});
-
-document.addEventListener('keyup', event => {
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    clearInterval(moveInterval);
-    moveInterval = null;
-  }
-});
-
-// Mouse ship movement
-document.addEventListener('mousemove', event => {
-  ship.style.left = event.clientX - 60 + 'px';
-});
-
-// Touch ship movement
-ship.addEventListener('touchmove', event => {
-  if (Math.floor(event.touches[0].clientX) > window.innerWidth * 0.7) {
-    // Optionally handle touch movement logic here
-  } else {
-    ship.style.left = Math.floor(event.touches[0].clientX) + 'px';
-  }
-});
-
-// Background video change
-earth.addEventListener('click', () => {
-  videoSource.setAttribute('src', 'video/earth.mp4');
-  videoContainer.load();
-});
-
-mars.addEventListener('click', () => {
-  videoSource.setAttribute('src', 'video/mars.mp4');
-  videoContainer.load();
-});
-
-space.addEventListener('click', () => {
-  videoSource.setAttribute('src', 'video/galaxy.mp4');
-  videoContainer.load();
 });

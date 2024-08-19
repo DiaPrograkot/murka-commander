@@ -214,7 +214,6 @@ body {
   top: 145px;
   transition: top 1.4s linear;
   transform: rotate(180deg);
-  /* transform: rotate(90deg); */
   visibility: hidden;
 }
 
