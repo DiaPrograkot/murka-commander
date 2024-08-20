@@ -175,14 +175,17 @@ let setAsteroidShape = asteroid => {
 };
 
 // Обработка клавиатуры для стрельбы
-let handleLaserShotKey = (event) => {
-  if (event.key === ' ' && !isSpacePressed) {
-    laserShot();
-    isSpacePressed = true;
-    setTimeout(() => {
-      isSpacePressed = false; 
-    }, 1);
-  }
+const handleLaserShotKey = () => {
+  document.addEventListener('keydown', event => {  
+     if (event.key === ' '&& !isSpacePressed) { 
+      isSpacePressed = !isSpacePressed;
+     }
+     })
+     document.addEventListener('keyup', event => {  
+       if (event.key === ' ') { 
+        laserShot();
+       }
+       })
 };
 
 document.addEventListener('keydown', event => {  
