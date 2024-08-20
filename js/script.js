@@ -6,7 +6,6 @@ let playerPlay = document.querySelector('.playerPlay')
 let playerLabel = document.querySelector('.playerLabel')
 let ship = document.querySelector('.ship')
 let gameover = document.querySelector('.gameover')
-let startgame = document.querySelector('.startgame') 
 let audio = document.querySelector('.audio')
 let lasersound = document.querySelector('.lasersound')
 let crash = document.querySelector('.crash')
@@ -15,7 +14,6 @@ let toggleMusic = document.querySelector('.toggleMusic')
 let muteSpeaker = toggleMusic.querySelector('.muteSpeaker')
 let musicButton = toggleMusic.querySelector('.musicButton')
 let play = document.querySelector('.play')
-let startplay = document.querySelector('.startplay')  
 let earth = document.querySelector('.earthImg')
 let mars = document.querySelector('.marsImg')
 let space = document.querySelector('.spaceImg')
@@ -23,15 +21,6 @@ let lives = document.querySelector('.lives')
 let videoContainer = document.querySelector('.videoContainer')
 let videoSource = videoContainer.querySelector('source')
 let star
-
-//для клавиатуры
-let moveLeft = false;  // Флаг для движения влево
-let moveRight = false; // Флаг для движения вправо
-let isSpacePressed = false 
-
-//для скрытия астероидов 
-let asteroidActive = false;
-let isGameRunning = false;
 
 let asteroidElement
 let asteroidShapeNumber
@@ -55,16 +44,15 @@ let showStars = () => {
 }
 
 let setCounter = () => {
-  counter.textContent = parseInt(counter.textContent) + 1;
+  counter.textContent = parseInt(counter.textContent) + 1
+}
 
-};
 //Plays laser sound
 let laserSound = () => {
-  if (lasersound.paused) { // Проверяем, не воспроизводится ли звук в данный момент
+  lasersound.pause()
   lasersound.currentTime = 0
   lasersound.volume = 0.1
   lasersound.play()
-  }
 }
 
 //Remove laser when asteroid is hit
@@ -75,11 +63,9 @@ let removeLaser = laser => {
 }
 //Remove lasers when hit the bottom of the window
 let removeLasers = () => {
-  let oldLasers = document.querySelectorAll('.laser')
-  for (let oldLaser of oldLasers) {
-    if (oldLaser.getBoundingClientRect().top >= window.innerHeight) {
-      oldLaser.remove()
-  }
+  let oldLaser = document.querySelector('.laser')
+  if (oldLaser.offsetTop <= -10) {
+    container.removeChild(oldLaser)
   }
 }
 
@@ -124,13 +110,13 @@ let createLaser = () => {
   laser.classList.add('laser')
   laser.setAttribute('src', 'img/bullet.svg')
   container.insertAdjacentElement('beforeend', laser)
-  laser.style.left = ship.offsetLeft + 46 + 'px'
+  laser.style.left = ship.offsetLeft + 40 + 'px'
+  // laser.style.top = ship.offsetTop + 110 + 'px'
   laserMovement(laser)
 }
 
 //Lasershot function
 let laserShot = () => {
-  if (!isGameRunning) return; // Проверяем, идет ли игра
   createLaser()
   removeLasers()
   laserSound()
@@ -188,21 +174,10 @@ let setAsteroidShape = asteroid => {
 
 //Gameover Popup
 let gameoverFunc = () => {
-  ship.classList.add('hidden'); // Скрываем корабль до начала игры
   gameover.style.display = 'flex'
-  asteroidActive = false; // Остановка астероидов
-  isGameRunning = false;  // Остановка игры
   play.addEventListener('click', e => {
-    //Вместо перезагрузки страницы (дублирует кнопку старт после перезагрузки) сбрасываем жизни и счёт и вызываем показ новых
-    stars = 3
-    counter.textContent = '0'
-    showStars()
-    gameover.style.display = 'none'
-    // Перезапуск игры
-    asteroidActive = true;  // Включаем активность астероидов
-    isGameRunning = true;  // Устанавливаем флаг, что игра идёт
-    startGame(); // Запускаем игру
-  }, { once: true }); // Используйте { once: true }, чтобы обработчик добавлялся только один раз
+    location.reload()
+  })
 }
 
 //Removes stars
@@ -224,7 +199,7 @@ let timeoutFunc = asteroid => {
   if (asteroidPosition <= -80) {
     if (container.contains(asteroid)) {
       container.removeChild(asteroid)
-
+      
       star = document.querySelector('.star')
       removeStars()
       asteroidFunction()
@@ -249,45 +224,19 @@ let createAsteroid = () => {
 
 //Full asteroid functionality
 let asteroidFunction = () => {
-  if (!asteroidActive) return; // Если астероиды неактивны, не запускаем функцию
-  let asteroid = createAsteroid();
-  container.append(asteroid);
-  setAsteroidShape(asteroid);
-  setAsteroidPosition(asteroid);
-
-  // Сбрасываем флаг на случай нового астероида
-  hasHitAsteroid = false;
-
-  removeAsteroid(asteroid);
+  let asteroid = createAsteroid()
+  container.append(asteroid)
+  setAsteroidShape(asteroid)
+  setAsteroidPosition(asteroid)
+  removeAsteroid(asteroid)
 }
 
-// Окно в начале игры, запускающая её
-let startgameFunc = () => {
-  startgame.style.display = 'flex'
-  asteroidActive = false; // Остановка астероидов
-  isGameRunning = false;  // Остановка игры
-  ship.classList.add('hidden'); // Скрываем корабль до начала игры
-  startplay.addEventListener('click', () => {
-    startgame.style.display = 'none'
-    startGame()
-  })
-}
-// Запуск астероидов, включение выстрелов
-let startGame = () => {
-  ship.classList.remove('hidden'); // Показываем корабль
-  asteroidActive = true;
-  isGameRunning = true;
-  asteroidFunction()
-  document.addEventListener('click', laserShot)
-  }
-
-  // Добавлен вызов функции старта игры
 showStars()
 let nameStorage = localStorage.getItem('name')
 console.log(nameStorage)
 if (nameStorage) {
   playerLabel.textContent = nameStorage
-  startgameFunc()
+  asteroidFunction()
   document.addEventListener('click', () => {
     laserShot()
   })
@@ -299,7 +248,7 @@ if (nameStorage) {
       localStorage.setItem('name', playerName)
       playerLabel.textContent = playerName
       playerNameContainer.style.display = 'none'
-      startgameFunc()
+      asteroidFunction()
       //Mouse laser shot event listener
       document.addEventListener('click', () => {
         laserShot()
@@ -326,72 +275,30 @@ toggleMusic.addEventListener('click', () => {
 })
 
 //Keyboard ship movement
-document.addEventListener('keydown', event => {  
-  if (!isGameRunning) return; // Проверяем, идет ли игра
-  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
-      moveLeft = true;
-  }  
-  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
-      moveRight = true;
-  }  
-  if (event.key === ' ' && !isSpacePressed) {  
-    laserShot()
-    isSpacePressed = true
-  }  
-});
-
-document.addEventListener('keyup', event => {  
-  if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
-      moveLeft = false;
-  }  
-  if (event.code === 'ArrowRight' || event.code === 'KeyD') {  
-      moveRight = false;
+document.addEventListener('keydown', event => {
+  if (event.key === 'ArrowLeft') {
+    ship.style.left = ship.offsetLeft - 40 + 'px'
+  }
+  if (event.key === 'ArrowRight') {
+    ship.style.left = ship.offsetLeft + 40 + 'px'
   }
   if (event.key === ' ') {
-    isSpacePressed = false
+    console.log('Space')
   }
-});
+})
 
-// Функция анимации
-function animate() {
-  const rect = ship.getBoundingClientRect();
-  if (moveLeft && rect.left > 0) {
-      ship.style.left = ship.offsetLeft - 9 + 'px';
-  }
-  if (moveRight && rect.right < window.innerWidth) {
-      ship.style.left = ship.offsetLeft + 9 + 'px';
-  }
-  // Вызов самой себя для следующего кадра
-  requestAnimationFrame(animate);
-}
-// Запуск анимационного цикла
-requestAnimationFrame(animate);
-
-// Mouse ship movement with boundary checks
+//Mouse ship movement
 document.addEventListener('mousemove', event => {
-  const containerRect = container.getBoundingClientRect();
-  const shipRect = ship.getBoundingClientRect();
-  let newLeft = event.clientX - 60;
-  if (newLeft < 0) {
-    newLeft = 0;
-  } else if (newLeft + shipRect.width > containerRect.width) {
-    newLeft = containerRect.width - shipRect.width;
-  }
-  ship.style.left = newLeft + 'px';
-});
+  ship.style.left = event.clientX - 60 + 'px'
+})
 
-// Touch ship movement with boundary checks
+//Touch ship movement
 ship.addEventListener('touchmove', event => {
-  const containerRect = container.getBoundingClientRect();
-  const shipRect = ship.getBoundingClientRect();
-  let newLeft = Math.floor(event.touches[0].clientX);
-  if (newLeft < 0) {
-    newLeft = 0;
-  } else if (newLeft + shipRect.width > containerRect.width) {
-    newLeft = containerRect.width - shipRect.width;
+  if (Math.floor(event.touches[0].clientX) > window.innerWidth * 0.7) {
+  } else {
+    ship.style.left = Math.floor(event.touches[0].clientX) + 'px'
   }
-  ship.style.left = newLeft + 'px';
-});
+})
 
 //Earth background
 earth.addEventListener('click', () => {
@@ -408,5 +315,3 @@ space.addEventListener('click', () => {
   videoSource.setAttribute('src', 'video/galaxy.mp4')
   videoContainer.load()
 })
-
-
