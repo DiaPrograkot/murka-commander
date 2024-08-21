@@ -537,3 +537,23 @@ body {
     width: 90%;
   }
 }
+
+.pause-button {
+  position: fixed;
+  bottom: 85px;  /* Расположение сверху */
+  left: 30px; /* Расположение слева */
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-left: 25px solid yellow;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.3s ease;
+}
+
+/* Увеличение при наведении */
+.pause-button:hover {
+  transform: scale(1.2); /* Увеличение кнопки при наведении */
+}

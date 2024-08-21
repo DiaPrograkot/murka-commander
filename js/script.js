@@ -21,6 +21,8 @@ let lives = document.querySelector('.lives')
 let videoContainer = document.querySelector('.videoContainer')
 let videoSource = videoContainer.querySelector('source')
 let star
+let pauseButton = document.querySelector('.pause-button')
+let isPaused = false
 
 
 let asteroidElement
@@ -35,6 +37,10 @@ let stars = 3
 let moveLeft = false;  // Флаг для движения влево
 let moveRight = false; // Флаг для движения вправо
 let isSpacePressed = false
+
+//before start
+ship.style.display = 'none'
+isGameOver = false
 
 //Display stars
 let showStars = () => {
@@ -134,7 +140,7 @@ let laserShot = () => {
 let setAsteroidPosition = asteroid => {
   let maxWidth = container.offsetWidth - asteroid.offsetWidth
   let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1)
-  asteroid.style.left = randomPosition + 'px'
+  asteroid.style.left = randomPosition + 15 + 'px'
   setTimeout(() => {
     asteroid.style.bottom = window.innerHeight + 140 + 'px'
   }, 1)
@@ -191,9 +197,6 @@ let gameoverFunc = () => {
   isGameOver = true
 }
 
-//before start
-ship.style.display = 'none'
-isGameOver = false
 
 //start 
 let startGame = () => {
@@ -267,7 +270,7 @@ let createAsteroid = () => {
 
 //Full asteroid functionality
 let asteroidFunction = () => {
-  if (isGameOver) return
+  if (isGameOver || isPaused) return
 
   let asteroid = createAsteroid()
   container.append(asteroid)
@@ -339,8 +342,7 @@ function animate() {
 // Запуск анимационного цикла
 requestAnimationFrame(animate);
 
-// Mouse ship movement with boundary checks
-document.addEventListener('mousemove', event => {
+let mouseMovement = event => {
   const containerRect = container.getBoundingClientRect();
   const shipRect = ship.getBoundingClientRect();
   let newLeft = event.clientX - 60;
@@ -352,7 +354,10 @@ document.addEventListener('mousemove', event => {
   }
 
   ship.style.left = newLeft + 'px';
-});
+}
+
+// Mouse ship movement with boundary checks
+document.addEventListener('mousemove', mouseMovement);
 
 // Touch ship movement with boundary checks
 ship.addEventListener('touchmove', event => {
@@ -385,5 +390,21 @@ mars.addEventListener('click', event => {
 space.addEventListener('click', event => {
   videoSource.setAttribute('src', 'video/galaxy.mp4')
   videoContainer.load()
+  event.stopPropagation()
+})
+
+pauseButton.addEventListener('click', event => {
+  if (isPaused) {
+    console.log('отпаузились')
+    asteroidElement.classList.remove('paused');
+    document.addEventListener('click', laserShot)
+    document.addEventListener('mousemove', mouseMovement)
+    asteroidFunction()
+  } else {
+    document.removeEventListener('click', laserShot)
+    document.removeEventListener('mousemove', mouseMovement)
+    console.log('запаузились')
+  }
+  isPaused = !isPaused
   event.stopPropagation()
 })
