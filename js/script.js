@@ -117,9 +117,9 @@ let laserMovement = laser => {
   }, 50);
 };
 
-
 // Создание лазера
 let createLaser = (asteroidId) => {
+  if (isPaused) return; // Останавливаем если игра на паузе
   let laser = document.createElement('img');
   laser.classList.add('laser');
   laser.setAttribute('src', 'img/bullet.svg');
@@ -176,6 +176,7 @@ let setAsteroidShape = asteroid => {
 
 // Обработка клавиатуры для стрельбы
 const handleLaserShotKey = () => {
+  if (isPaused) return; // Останавливаем если игра на паузе
   document.addEventListener('keydown', event => {  
      if (event.key === ' '&& !isSpacePressed) { 
       isSpacePressed = !isSpacePressed;
@@ -189,6 +190,7 @@ const handleLaserShotKey = () => {
 };
 
 document.addEventListener('keydown', event => {  
+  if (isPaused) return; // Останавливаем если игра на паузе
   if (event.code === 'ArrowLeft' || event.code === 'KeyA') {  
     moveLeft = true;
   }  
@@ -206,8 +208,46 @@ document.addEventListener('keyup', event => {
   }  
 });
 
+let isPaused = false;
+let asteroidIntervals = {}; // Хранение интервалов для каждого астероида
+
+// Обработчик событий для кнопки паузы
+document.querySelector('.pauseButton').addEventListener('click', () => {
+  isPaused = !isPaused;
+  if (isPaused) {
+    document.querySelector('.pauseButton').textContent = 'Resume';
+    // Остановка движения астероидов
+    for (let asteroidId in asteroidIntervals) {
+      clearInterval(asteroidIntervals[asteroidId]);
+    }
+  } else {
+    document.querySelector('.pauseButton').textContent = 'Pause';
+    // Возобновление движения астероидов
+    for (let asteroidId in asteroidIntervals) {
+      moveAsteroid(asteroidId);
+    }
+    requestAnimationFrame(animate);
+  }
+});
+// Функция для движения астероида
+let moveAsteroid = (asteroidId) => {
+  let asteroid = document.querySelector(`[data-id='${asteroidId}']`);
+  asteroidIntervals[asteroidId] = setInterval(() => {
+    if (!isPaused) {
+      asteroid.style.top = `${asteroid.offsetTop - 2}px`;
+    }
+    if (asteroid.offsetTop >= window.innerHeight) {
+      clearInterval(asteroidIntervals[asteroidId]);
+      delete asteroidIntervals[asteroidId];
+      removeStars();
+      container.removeChild(asteroid);
+      asteroidFunction();
+    }
+  }, 20);
+};
 // Анимация
 function animate() {
+  if (isPaused) return; // Останавливаем анимацию, если игра на паузе
   const rect = ship.getBoundingClientRect();
   if (moveLeft && rect.left > 0) {
     ship.style.left = ship.offsetLeft - 9 + 'px';
@@ -221,6 +261,7 @@ requestAnimationFrame(animate);
 
 // Движение корабля мышью
 const moveShip = (clientX) => {
+  if (isPaused) return; // Останавливаем, если игра на паузе
   const containerRect = container.getBoundingClientRect();
   const shipRect = ship.getBoundingClientRect();
   let newLeft = clientX - 60;
@@ -280,6 +321,7 @@ let removeAsteroid = asteroid => {
 
 // Создание астероида
 let createAsteroid = () => {
+  if (isPaused) return; // Останавливаем если игра на паузе
   let asteroidElement = document.createElement('img');
   asteroidElement.classList.add('asteroid');
   asteroidElement.setAttribute('draggable', 'false');
@@ -295,8 +337,9 @@ let asteroidFunction = () => {
   container.append(asteroid);
   setAsteroidShape(asteroid);
   setAsteroidPosition(asteroid);
-  removeAsteroid(asteroid);
-  return asteroidId;
+  moveAsteroid(asteroidId); // Начало движения астероида
+  removeAsteroid(asteroid); // Удаляем астероид, когда он выходит за пределы окна
+
   }
 };
 
