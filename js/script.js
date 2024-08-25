@@ -132,14 +132,14 @@ let createLaser = (asteroidId) => {
 
 // Обработка стрельбы
 let laserShot = () => {
-  if (canShoot) {
+  if (canShoot && !isPaused) {
     let asteroidId = document.querySelector('.asteroid')?.getAttribute('data-id');
     if (asteroidId) {
       createLaser(asteroidId);
       removeLasers();
       laserSound();
       canShoot = false;
-      setTimeout(() => { canShoot = true; }, 1); // через 1 мс игрок сможет снова стрелять
+      setTimeout(() => { canShoot = true; }, 10);
     }
   }
 };
@@ -176,17 +176,17 @@ let setAsteroidShape = asteroid => {
 
 // Обработка клавиатуры для стрельбы
 const handleLaserShotKey = () => {
-  if (isPaused) return; // Останавливаем если игра на паузе
+  if (isPaused) return;
   document.addEventListener('keydown', event => {  
-     if (event.key === ' '&& !isSpacePressed) { 
+    if (event.key === ' ' && !isSpacePressed) { 
       isSpacePressed = !isSpacePressed;
-     }
-     })
-     document.addEventListener('keyup', event => {  
-       if (event.key === ' ') { 
-        laserShot();
-       }
-       })
+    }
+  });
+  document.addEventListener('keyup', event => {  
+    if (event.key === ' ') { 
+      laserShot();
+    }
+  });
 };
 
 document.addEventListener('keydown', event => {  
@@ -222,11 +222,15 @@ document.querySelector('.pauseButton').addEventListener('click', () => {
     }
   } else {
     document.querySelector('.pauseButton').textContent = 'Pause';
+    canShoot = false
     // Возобновление движения астероидов
     for (let asteroidId in asteroidIntervals) {
       moveAsteroid(asteroidId);
     }
     requestAnimationFrame(animate);
+    setTimeout(() => {
+      canShoot = true;
+    }, 10);
   }
 });
 // Функция для движения астероида
@@ -234,7 +238,7 @@ let moveAsteroid = (asteroidId) => {
   let asteroid = document.querySelector(`[data-id='${asteroidId}']`);
   asteroidIntervals[asteroidId] = setInterval(() => {
     if (!isPaused) {
-      asteroid.style.top = `${asteroid.offsetTop - 2}px`;
+      asteroid.style.top = `${asteroid.offsetTop - 3}px`;
     }
     if (asteroid.offsetTop >= window.innerHeight) {
       clearInterval(asteroidIntervals[asteroidId]);
@@ -275,18 +279,32 @@ ship.addEventListener('touchmove', event => moveShip(event.touches[0].clientX));
 
 // Изменение фона видео
 earth.addEventListener('click', () => {
+  canShoot = false;
   videoSource.setAttribute('src', 'video/earth.mp4');
   videoContainer.load();
+  setTimeout(() => {
+    canShoot = true;
+  }, 10); // Небольшая задержка для завершения загрузки
 });
 
 mars.addEventListener('click', () => {
+  canShoot = false;
   videoSource.setAttribute('src', 'video/mars.mp4');
   videoContainer.load();
+  setTimeout(() => {
+    canShoot = true;
+  }, 10);
 });
 
 space.addEventListener('click', () => {
+  canShoot = false;
+  
   videoSource.setAttribute('src', 'video/galaxy.mp4');
   videoContainer.load();
+  setTimeout(() => {
+   
+    canShoot = true;
+  }, 10);
 });
 
 // Удаление звезд
@@ -425,15 +443,24 @@ let musicPlay = () => {
 setTimeout(musicPlay, 3000);
 
 toggleMusic.addEventListener('click', () => {
+  canShoot = false;
+  
   if (audio.paused) {
     muteSpeaker.style.opacity = '0';
     audio.play().then(() => {
       audio.volume = 0.1;
+      setTimeout(() => {
+        canShoot = true;
+      }, 500);
     }).catch(error => {
       console.error("Ошибка воспроизведения музыки:", error);
+      canShoot = true;
     });
   } else {
     audio.pause();
     muteSpeaker.style.opacity = '1';
+    setTimeout(() => {
+      canShoot = true;
+    }, 500);
   }
 });
