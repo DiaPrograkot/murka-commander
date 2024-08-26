@@ -60,6 +60,7 @@ body {
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   transform: rotate(180deg);
+  visibility: hidden;
 }
 
 .fighter {
@@ -217,6 +218,7 @@ body {
   transition: top 1.4s linear;
   transform: rotate(180deg);
   /* transform: rotate(90deg); */
+  visibility: hidden;
 }
 
 .asteroid {
@@ -238,6 +240,18 @@ body {
   top: 20px;
   right: 58px;
 }
+.pause {
+  position: absolute;
+  font-size: 7rem;
+  color: yellow;
+  top: 95px;
+  right: 65px;
+  cursor: pointer; 
+  z-index: 1000; 
+}
+
+
+
 .playerLabel {
   position: fixed;
   display: inline-block;
@@ -537,6 +551,5 @@ body {
     width: 90%;
   }
 }
-.hidden {
-  visibility: hidden;
-}
+
+
