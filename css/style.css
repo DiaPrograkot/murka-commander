@@ -53,6 +53,18 @@ body {
   position: fixed;
 }
 
+.pauseButton {
+  position: absolute;
+  top: 100px;
+  right: 50px;
+  padding: 10px 20px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 .ship {
   position: absolute;
   top: 6%;
