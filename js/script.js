@@ -428,9 +428,12 @@ toggleMusic.addEventListener('click', (event) => {
 // Управление паузой игры
 pauseButton.addEventListener('click', () => {
   isPaused = !isPaused; // Переключение состояния паузы
-  if (isPaused) {
-    pauseButton.textContent = '| |';
-  } else {
-    pauseButton.textContent = '▶';
+  pauseButton.textContent = isPaused ? '▶' : '||';
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'KeyP') {
+    isPaused = !isPaused; // Переключение состояния паузы
+    pauseButton.textContent = isPaused ? '▶' : '||';
   }
 });
