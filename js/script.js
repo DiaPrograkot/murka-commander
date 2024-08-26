@@ -227,7 +227,6 @@ document.querySelector('.pauseButton').addEventListener('click', () => {
     for (let asteroidId in asteroidIntervals) {
       moveAsteroid(asteroidId);
     }
-    requestAnimationFrame(animate);
     setTimeout(() => {
       canShoot = true;
     }, 10);
