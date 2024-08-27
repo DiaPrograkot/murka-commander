@@ -49,7 +49,10 @@ let showStars = () => {
 
 // Обновление счетчика
 let setCounter = () => {
+  if (!loss){
   counter.textContent = parseInt(counter.textContent) + 1;
+  }
+  return counter.textContent
 };
 
 // Воспроизведение звука лазера
@@ -341,7 +344,10 @@ let startGame = () => {
 // Окончание игры
 let gameoverFunc = () => {
   loss = true
+  updateRecord();
   gameover.style.display = 'flex';
+  highscore. textContent = ` ${highscoreNumber.textContent}`
+  scoreNumber.textContent =  `Score: ${setCounter()}`
   ship.style.visibility = 'hidden';
   isSpacePressed = false;
   canShoot = false;
@@ -370,6 +376,7 @@ let startNewGame = () => {
 // Стартовая заставка игры
 let startgameFunc = () => {
   startgame.style.display = 'flex';
+  highscoreNumber.textContent = `Highscore: ${record}`;
   startplay.addEventListener('click', () => {
     startgame.style.display = 'none';
     startGame();
@@ -381,9 +388,20 @@ let startgameFunc = () => {
   });
 };
 
+//Обновление рекорда
+let updateRecord = () => {
+  let currentScore = parseInt(counter.textContent);
+  if (currentScore > record) {
+    record = currentScore;
+    localStorage.setItem('record', record);
+    highscoreNumber.textContent = record;
+  }
+};
+
 // Проверка имени игрока и запуск игры
 showStars();
 let nameStorage = localStorage.getItem('name');
+let record = localStorage.getItem('record') || 0;
 if (nameStorage) {
   playerLabel.textContent = nameStorage;
   startgameFunc();
@@ -428,12 +446,12 @@ toggleMusic.addEventListener('click', (event) => {
 // Управление паузой игры
 pauseButton.addEventListener('click', () => {
   isPaused = !isPaused; // Переключение состояния паузы
-  pauseButton.textContent = isPaused ? '▶' : '||';
+  pauseButton.textContent = isPaused ? '||' : '▶';
 });
 
 document.addEventListener('keydown', (event) => {
   if (event.code === 'KeyP') {
     isPaused = !isPaused; // Переключение состояния паузы
-    pauseButton.textContent = isPaused ? '▶' : '||';
+    pauseButton.textContent = isPaused ? '||' : '▶';
   }
 });

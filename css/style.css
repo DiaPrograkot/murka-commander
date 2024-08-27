@@ -553,3 +553,7 @@ body {
 }
 
 
+.highscoreContainer {
+  display: flex;
+  flex-direction: column;
+}
