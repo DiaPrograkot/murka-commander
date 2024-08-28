@@ -147,7 +147,7 @@ let laserShot = () => {
 };
 
 let moveAsteroid = (asteroid) => {
-  let speed = 3; // Скорость движения астероида
+  let speed = 5; // Скорость движения астероида
     const animate = () => {
         if (!isPaused) {// Уменьшаем значение `top` для движения астероида вверх
     asteroid.style.top = (parseInt(asteroid.style.top) - speed) + 'px';
@@ -349,12 +349,14 @@ let gameoverFunc = () => {
   document.removeEventListener('keyup', handleLaserShotKey);
   document.removeEventListener('click', laserShot);
   play.addEventListener('click', startNewGame);
+  console.log("Текущий счет перед обновлением рекорда: " + counter.textContent);
+
+  updateHighscore();
+
 };
 
 // Начало новой игры
 let startNewGame = () => {
-  yourscore = 0;
-  document.getElementById('yourscore').textContent = yourscore;
   loss = false
   asteroidFunction();
   ship.style.visibility = 'visible';
@@ -439,40 +441,23 @@ document.addEventListener('keydown', (event) => {
     pauseButton.textContent = isPaused ? '▶' : '||';
   }
 });
-window.addEventListener('load', () => {
-  let highscoreElement = document.getElementById('highscore');
-  let yourscoreElement = document.getElementById('yourscore');
 
-  if (!highscoreElement || !yourscoreElement) {
-    console.error("Элементы с id 'highscore' и 'yourscore' не найдены в HTML.");
-    return;
+let highscore = parseInt(localStorage.getItem('highscore')) || 0;
+console.log("Рекорд при загрузке: " + highscore);
+
+document.getElementById('highscore').textContent = highscore;
+
+// Обновление рекорда
+let updateHighscore = () => {
+  let currentScore = parseInt(counter.textContent);
+  console.log("Текущий счет: " + currentScore);
+  console.log("Рекорд до обновления: " + highscore);
+  if (currentScore > highscore) {
+    highscore = currentScore;
+    localStorage.setItem('highscore', highscore);
+    document.getElementById('highscore').textContent = highscore;
+    console.log("Новый рекорд: " + highscore);
   }
+};
 
-  // Инициализация значений
-  let highscore = localStorage.getItem('highscore') || 0;
-  highscoreElement.textContent = highscore;
-
-  let yourscore = 0;
-  yourscoreElement.textContent = yourscore;
-
-  // Функция обновления счета
-  let updateScore = () => {
-    yourscore += 1;
-    yourscoreElement.textContent = yourscore;
-
-    if (yourscore > highscore) {
-      highscore = yourscore;
-      highscoreElement.textContent = highscore;
-      localStorage.setItem('highscore', highscore);
-    }
-  };
-
-  // Вызов updateScore где нужно, например, при уничтожении астероида
-  document.addEventListener('click', () => {
-    updateScore(); // Обновляем счет по клику для теста
-  });
-});
-// Пример вызова функции при уничтожении астероида:
-function destroyAsteroid() {
-  updateScore(); // Обновляем счет при уничтожении астероида
-}
+console.log(localStorage.getItem('highscore'));
