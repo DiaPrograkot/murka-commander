@@ -147,9 +147,9 @@ let laserShot = () => {
 };
 
 let moveAsteroid = (asteroid) => {
-  let speed = 5; // Скорость движения астероида
+  let speed = 3; // Скорость движения астероида
     const animate = () => {
-        if (!isPaused) {// Уменьшаем значение `top` для движения астероида вверх
+        if (!isPaused) {// Уменьшаем значение top для движения астероида вверх
     asteroid.style.top = (parseInt(asteroid.style.top) - speed) + 'px';
         }
       // Проверка на достижение верхней границы экрана
@@ -161,7 +161,7 @@ let moveAsteroid = (asteroid) => {
       requestAnimationFrame(animate); // Запрос следующего кадра анимации
     }
   };
-  // Начальная установка `top` и запуск анимации
+  // Начальная установка top и запуск анимации
   asteroid.style.top = window.innerHeight + 'px'; // Начальное положение астероида ниже экрана
     animate();
 };
@@ -338,21 +338,32 @@ let startGame = () => {
   document.addEventListener('keyup', handleLaserShotKey);
 };
 
+let highscore = localStorage.getItem('highscore') || 0;
+document.getElementById('highscore').textContent = highscore;
 // Окончание игры
 let gameoverFunc = () => {
-  loss = true
+  loss = true;
   gameover.style.display = 'flex';
   ship.style.visibility = 'hidden';
   isSpacePressed = false;
   canShoot = false;
+  
+  let currentScore = parseInt(counter.textContent);
+  let highscore = parseInt(localStorage.getItem('highscore')) || 0;
+
+  // Обновляем рекорд, если текущий счёт больше сохраненного рекорда
+  if (currentScore > highscore) {
+      highscore = currentScore;
+      localStorage.setItem('highscore', highscore);
+  }
+
+  // Обновляем отображение highscore в элементе gameover
+  document.getElementById('highscore-display').textContent = highscore; 
+  document.getElementById('yourscore').textContent = currentScore;
   document.removeEventListener('keydown', handleLaserShotKey);
   document.removeEventListener('keyup', handleLaserShotKey);
   document.removeEventListener('click', laserShot);
   play.addEventListener('click', startNewGame);
-  console.log("Текущий счет перед обновлением рекорда: " + counter.textContent);
-
-  updateHighscore();
-
 };
 
 // Начало новой игры
@@ -442,22 +453,3 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-let highscore = parseInt(localStorage.getItem('highscore')) || 0;
-console.log("Рекорд при загрузке: " + highscore);
-
-document.getElementById('highscore').textContent = highscore;
-
-// Обновление рекорда
-let updateHighscore = () => {
-  let currentScore = parseInt(counter.textContent);
-  console.log("Текущий счет: " + currentScore);
-  console.log("Рекорд до обновления: " + highscore);
-  if (currentScore > highscore) {
-    highscore = currentScore;
-    localStorage.setItem('highscore', highscore);
-    document.getElementById('highscore').textContent = highscore;
-    console.log("Новый рекорд: " + highscore);
-  }
-};
-
-console.log(localStorage.getItem('highscore'));
