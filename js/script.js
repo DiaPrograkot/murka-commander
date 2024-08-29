@@ -120,25 +120,53 @@ let laserMovement = laser => {
 };
 
 
-//Create laser and initial positioning
-let createLaser = () => {
-  let laser = document.createElement('img')
-  laser.classList.add('laser')
-  laser.setAttribute('src', 'img/bullet.svg')
-  container.insertAdjacentElement('beforeend', laser)
-  laser.style.left = ship.offsetLeft + 40 + 'px'
-  // laser.style.top = ship.offsetTop + 110 + 'px'
-  laserMovement(laser)
-}
+// Создание лазера
+let createLaser = (asteroidId) => {
+  let laser = document.createElement('img');
+  laser.classList.add('laser');
+  laser.setAttribute('src', 'img/bullet.svg');
+  container.append(laser);
+  laser.setAttribute('data-asteroid-id', asteroidId);
+  laser.style.left = `${ship.offsetLeft + 46}px`;
+  laser.style.visibility = 'visible';
+  laserMovement(laser);
+};
 
-//Lasershot function
+// Обработка стрельбы
 let laserShot = () => {
-  createLaser()
-  removeLasers()
-  laserSound()
-}
+  if (canShoot & !isPaused) {
+    let asteroidId = document.querySelector('.asteroid')?.getAttribute('data-id');
+    if (asteroidId) {
+      createLaser(asteroidId);
+      removeLasers();
+      laserSound();
+      canShoot = false;
+      setTimeout(() => { canShoot = true; }, 1); // через 1 мс игрок сможет снова стрелять
+    }
+  }
+};
 
-//Set the asteroid position
+let moveAsteroid = (asteroid) => {
+  let speed = 3; // Скорость движения астероида
+    const animate = () => {
+        if (!isPaused) {// Уменьшаем значение top для движения астероида вверх
+    asteroid.style.top = (parseInt(asteroid.style.top) - speed) + 'px';
+        }
+      // Проверка на достижение верхней границы экрана
+    if (parseInt(asteroid.style.top) <= -asteroid.offsetHeight) {
+      container.removeChild(asteroid); // Удалить астероид из DOM
+      removeStars(); // Убрать звезду (жизнь) у игрока
+      asteroidFunction(); // Создать новый астероид
+    } else {
+      requestAnimationFrame(animate); // Запрос следующего кадра анимации
+    }
+  };
+  // Начальная установка top и запуск анимации
+  asteroid.style.top = window.innerHeight + 'px'; // Начальное положение астероида ниже экрана
+    animate();
+};
+
+
 let setAsteroidPosition = asteroid => {
   let maxWidth = container.offsetWidth - asteroid.offsetWidth;
   let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1);
@@ -289,16 +317,88 @@ let createAsteroid = () => {
 
 // Полная функциональность астероида
 let asteroidFunction = () => {
-  let asteroid = createAsteroid()
-  container.append(asteroid)
-  setAsteroidShape(asteroid)
-  setAsteroidPosition(asteroid)
-  removeAsteroid(asteroid)
-}
+  if (!loss){
+  let asteroid = createAsteroid();
+  let asteroidId = Date.now();
+  asteroid.setAttribute('data-id', asteroidId);
+  container.append(asteroid);
+  setAsteroidShape(asteroid);
+  setAsteroidPosition(asteroid);
+  removeAsteroid(asteroid);
+  return asteroidId;
+  }
+};
 
-showStars()
-let nameStorage = localStorage.getItem('name')
-console.log(nameStorage)
+// Начало игры
+let startGame = () => {
+  ship.style.visibility = 'visible';
+  asteroidFunction();
+  document.addEventListener('click', laserShot);
+  document.addEventListener('keydown', handleLaserShotKey);
+  document.addEventListener('keyup', handleLaserShotKey);
+};
+
+let highscore = localStorage.getItem('highscore') || 0;
+document.getElementById('highscore').textContent = highscore;
+// Окончание игры
+let gameoverFunc = () => {
+  loss = true;
+  gameover.style.display = 'flex';
+  ship.style.visibility = 'hidden';
+  isSpacePressed = false;
+  canShoot = false;
+  
+  let currentScore = parseInt(counter.textContent);
+  let highscore = parseInt(localStorage.getItem('highscore')) || 0;
+
+  // Обновляем рекорд, если текущий счёт больше сохраненного рекорда
+  if (currentScore > highscore) {
+      highscore = currentScore;
+      localStorage.setItem('highscore', highscore);
+  }
+
+  // Обновляем отображение highscore в элементе gameover
+  document.getElementById('highscore-display').textContent = highscore; 
+  document.getElementById('yourscore').textContent = currentScore;
+  document.removeEventListener('keydown', handleLaserShotKey);
+  document.removeEventListener('keyup', handleLaserShotKey);
+  document.removeEventListener('click', laserShot);
+  play.addEventListener('click', startNewGame);
+};
+
+// Начало новой игры
+let startNewGame = () => {
+  loss = false
+  asteroidFunction();
+  ship.style.visibility = 'visible';
+  stars = 3;
+  counter.textContent = '0';
+  showStars();
+  gameover.style.display = 'none';
+  isSpacePressed = false;
+  canShoot = true;
+  document.addEventListener('click', laserShot);
+  document.addEventListener('keydown', handleLaserShotKey);
+  document.addEventListener('keyup', handleLaserShotKey);
+};
+
+// Стартовая заставка игры
+let startgameFunc = () => {
+  startgame.style.display = 'flex';
+  startplay.addEventListener('click', () => {
+    startgame.style.display = 'none';
+    startGame();
+    document.addEventListener('click', () => {
+      audio.play().catch(error => {
+        console.error("Ошибка воспроизведения музыки:", error);
+      });
+    }, { once: true });
+  });
+};
+
+// Проверка имени игрока и запуск игры
+showStars();
+let nameStorage = localStorage.getItem('name');
 if (nameStorage) {
   playerLabel.textContent = nameStorage;
   startgameFunc();
@@ -340,18 +440,15 @@ toggleMusic.addEventListener('click', (event) => {
   }
 });
 
-//Earth background
-earth.addEventListener('click', () => {
-  videoSource.setAttribute('src', 'video/earth.mp4')
-  videoContainer.load()
-})
-//Mars background
-mars.addEventListener('click', () => {
-  videoSource.setAttribute('src', 'video/mars.mp4')
-  videoContainer.load()
-})
-//Space background
-space.addEventListener('click', () => {
-  videoSource.setAttribute('src', 'video/galaxy.mp4')
-  videoContainer.load()
-})
+// Управление паузой игры
+pauseButton.addEventListener('click', () => {
+  isPaused = !isPaused; // Переключение состояния паузы
+  pauseButton.textContent = isPaused ? '▶' : '||';
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'KeyP') {
+    isPaused = !isPaused; // Переключение состояния паузы
+    pauseButton.textContent = isPaused ? '▶' : '||';
+  }
+});
