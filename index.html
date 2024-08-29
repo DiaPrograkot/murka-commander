@@ -7,6 +7,7 @@
     <link rel="shortcut icon" href="img/iconmurka.png" type="image/x-icon" />
     <script src="./js/script.js" defer></script>
     <title> Murka Sensei Commander </title>
+    <title> Murka Sensei Commander </title>
   </head>
   <body>
     <video autoplay muted loop draggable="false" class="videoContainer">
@@ -46,9 +47,17 @@
       <div class="gameover">
         <div class="title">Gameover</div>
         <div class="highscoreContainer">
-          <div class="highscoreTitle">Highscore:</div>
-          <div class="highscoreNumber">1234</div>
+          <div class="highscore">Highscore: <span id="highscore">0</span></div>
         </div>
+        <div class="startplay">▶</div>
+      </div>
+      <button id="pauseButton" class="pauseButton">▶</button>
+      <div class="gameover">
+        <div class="title">Gameover</div>
+        <div id="gameover">
+          <div>Your Score: <span id="yourscore"></span></div>
+          <div>High Score: <span id="highscore-display"></span></div>
+      </div>
         <div class="play">▶</div>
       </div>
       <div class="counter">0</div>
