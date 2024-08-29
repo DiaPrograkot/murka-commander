@@ -53,6 +53,18 @@ body {
   position: fixed;
 }
 
+.pauseButton {
+  position: absolute;
+  top: 100px;
+  right: 50px;
+  padding: 10px 20px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 .ship {
   position: absolute;
   top: 6%;
@@ -240,18 +252,6 @@ body {
   top: 20px;
   right: 58px;
 }
-.pause {
-  position: absolute;
-  font-size: 7rem;
-  color: yellow;
-  top: 95px;
-  right: 65px;
-  cursor: pointer; 
-  z-index: 1000; 
-}
-
-
-
 .playerLabel {
   position: fixed;
   display: inline-block;
@@ -406,6 +406,20 @@ body {
 .highscoreContainer .highscoreTitle {
   margin-right: 1rem;
 }
+.currentScoreContainer {
+  padding-top: 1rem;
+  color: #db1818;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; 
+  -ms-flex-pack: distribute;
+  justify-content: space-around;
+  font-size: 6rem;
+}
+
+.currentscoreContainer .currentscoreTitle {
+  margin-right: 1rem;
+}
 
 .startplay, .play {
   cursor: pointer;
@@ -552,4 +566,36 @@ body {
   }
 }
 
-
+.levelButtonEasy {
+  position: absolute;
+  top: 169px;
+  left: 150px;
+  padding: 15px 45px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.levelButtonMedium {
+  position: absolute;
+  top: 170px;
+  right: 313.5px;
+  padding: 15px 40px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.levelButtonHard {
+  position: absolute;
+  top: 169px;
+  right: 150px;
+  padding: 15px 45px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+}
