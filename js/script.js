@@ -35,6 +35,7 @@ let isSpacePressed = false;
 let canShoot = true;
 let isLaserPlaying = false;
 let stars = 3;
+let difficulty = 'medium'; // Значение по умолчанию
 
 // Отображение звезд
 let showStars = () => {
@@ -150,23 +151,22 @@ let laserShot = () => {
 };
 
 let moveAsteroid = (asteroid) => {
-  let speed = 5; // Скорость движения астероида
-    const animate = () => {
-        if (!isPaused) {// Уменьшаем значение `top` для движения астероида вверх
-    asteroid.style.top = (parseInt(asteroid.style.top) - speed) + 'px';
-        }
-      // Проверка на достижение верхней границы экрана
+  const animate = () => {
+    if (!isPaused) {
+      asteroid.style.top = (parseInt(asteroid.style.top) - asteroidSpeed) + 'px'; // Используйте глобальную переменную asteroidSpeed
+    }
     if (parseInt(asteroid.style.top) <= -asteroid.offsetHeight) {
-      container.removeChild(asteroid); // Удалить астероид из DOM
-      removeStars(); // Убрать звезду (жизнь) у игрока
-      asteroidFunction(); // Создать новый астероид
+      if (asteroid.parentNode) {
+        asteroid.remove(); // Удаляем астероид, если он все еще находится в DOM
+        removeStars();
+        asteroidFunction();
+      }
     } else {
-      requestAnimationFrame(animate); // Запрос следующего кадра анимации
+      requestAnimationFrame(animate);
     }
   };
-  // Начальная установка `top` и запуск анимации
-  asteroid.style.top = window.innerHeight + 'px'; // Начальное положение астероида ниже экрана
-    animate();
+  asteroid.style.top = window.innerHeight + 'px';
+  animate();
 };
 
 
@@ -341,33 +341,74 @@ let startGame = () => {
   document.addEventListener('keyup', handleLaserShotKey);
 };
 
+// Установка уровня сложности
+const setDifficulty = (level) => {
+    difficulty = level; // Сохраняем выбранный уровень сложности
+    switch (difficulty) {
+        case 'easy':
+            stars = 4; // Больше жизней
+            asteroidSpeed = 2; // Медленнее астероиды
+            break;
+        case 'medium':
+            stars = 3; // Стандартное количество жизней
+            asteroidSpeed = 4; // Средняя скорость астероидов
+            break;
+        case 'hard':
+            stars = 2; // Меньше жизней
+            asteroidSpeed = 6; // Быстрые астероиды
+            break;
+    }
+    showStars(); // Обновляем отображение звезд сразу после изменения сложности
+     console.log('Current difficulty:', difficulty); // Вывод уровня сложности в консоль
+};
+
+// Функции для обработки выбора сложности
+const handleEasyClick = () => {
+  setDifficulty('easy');
+};
+const handleMediumClick = () => {
+  setDifficulty('medium');
+};
+const handleHardClick = () => {
+  setDifficulty('hard');
+};
+
 // Окончание игры
 let gameoverFunc = () => {
-  loss = true
+  loss = true;
   updateRecord();
   gameover.style.display = 'flex';
-  highscore. textContent = ` ${highscoreNumber.textContent}`
-  scoreNumber.textContent =  `Score: ${setCounter()}`
   ship.style.visibility = 'hidden';
   isSpacePressed = false;
   canShoot = false;
-  document.removeEventListener('keydown', handleLaserShotKey);
-  document.removeEventListener('keyup', handleLaserShotKey);
-  document.removeEventListener('click', laserShot);
+  // Обновляем счет и рекорд
+  highscoreNumber.textContent = record;
+  highscore.textContent = `Highscore: ${record}`;
+  scoreNumber.textContent = `Score: ${setCounter()}`;
+  // Подключаем кнопку начала новой игры
   play.addEventListener('click', startNewGame);
 };
 
-// Начало новой игры
 let startNewGame = () => {
-  loss = false
-  asteroidFunction();
-  ship.style.visibility = 'visible';
-  stars = 3;
-  counter.textContent = '0';
-  showStars();
-  gameover.style.display = 'none';
+  // Сброс всех параметров игры перед началом новой
+  loss = false;
   isSpacePressed = false;
   canShoot = true;
+  moveLeft = false;
+  moveRight = false;
+  counter.textContent = '0';
+
+  // Применение уровня сложности перед началом игры
+  setDifficulty(difficulty); // Применяем выбранную сложность
+
+  // Обновляем интерфейс и запускаем игру
+  ship.style.visibility = 'visible';
+  gameover.style.display = 'none';
+  
+  // Начинаем создание астероидов после применения сложности
+  asteroidFunction();
+
+  // Подключаем обработчики для стрельбы и движения
   document.addEventListener('click', laserShot);
   document.addEventListener('keydown', handleLaserShotKey);
   document.addEventListener('keyup', handleLaserShotKey);
@@ -377,14 +418,14 @@ let startNewGame = () => {
 let startgameFunc = () => {
   startgame.style.display = 'flex';
   highscoreNumber.textContent = `Highscore: ${record}`;
+  // Обработчики кликов для выбора сложности устанавливаются один раз
+  document.querySelector('.easy').addEventListener('click', handleEasyClick);
+  document.querySelector('.medium').addEventListener('click', handleMediumClick);
+  document.querySelector('.hard').addEventListener('click', handleHardClick);
   startplay.addEventListener('click', () => {
     startgame.style.display = 'none';
-    startGame();
-    document.addEventListener('click', () => {
-      audio.play().catch(error => {
-        console.error("Ошибка воспроизведения музыки:", error);
-      });
-    }, { once: true });
+    setDifficulty(difficulty); // Применяем выбранную сложность
+    startGame(); // Начало игры с учетом текущего уровня сложности
   });
 };
 
