@@ -348,7 +348,7 @@ body {
 }
 .startgame, .gameover {
   width: 80rem;
-  height: 60vh;
+  height: 70vh;
   background-color: rgba(255, 255, 0, 0.151);
   border-radius: 10px;
   position: absolute;
@@ -392,12 +392,13 @@ body {
   text-decoration: underline;
 }
 
-.highscoreContainer {
+.highscoreContainer, #gameover {
   padding-top: 1rem;
   color: #db1818;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  flex-direction: column;
   -ms-flex-pack: distribute;
   justify-content: space-around;
   font-size: 6rem;
@@ -406,25 +407,11 @@ body {
 .highscoreContainer .highscoreTitle {
   margin-right: 1rem;
 }
-.currentScoreContainer {
-  padding-top: 1rem;
-  color: #db1818;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex; 
-  -ms-flex-pack: distribute;
-  justify-content: space-around;
-  font-size: 6rem;
-}
-
-.currentscoreContainer .currentscoreTitle {
-  margin-right: 1rem;
-}
 
 .startplay, .play {
   cursor: pointer;
   position: absolute;
-  top: 60%;
+  top: 70%;
   -webkit-transition: all 0.5s ease;
   transition: all 0.5s ease;
   color: rgba(190, 60, 60, 0.822);
@@ -459,7 +446,7 @@ body {
 
 .startgame, .gameover:hover .play {
   color: rgba(238, 14, 14, 0.863);
-  font-size: 11rem;
+  font-size: 12rem;
 }
 
 .lives {
@@ -565,10 +552,9 @@ body {
     width: 90%;
   }
 }
-
 .levelButtonEasy {
   position: absolute;
-  top: 169px;
+  top: 230px;
   left: 150px;
   padding: 15px 45px;
   background-color: #ffdd1a;
@@ -579,7 +565,7 @@ body {
 }
 .levelButtonMedium {
   position: absolute;
-  top: 170px;
+  top: 230px;
   right: 313.5px;
   padding: 15px 40px;
   background-color: #ffdd1a;
@@ -590,7 +576,40 @@ body {
 }
 .levelButtonHard {
   position: absolute;
-  top: 169px;
+  top: 230px;
+  right: 150px;
+  padding: 15px 45px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.levelButtonEasyG {
+  position: absolute;
+  top: 230px;
+  left: 150px;
+  padding: 15px 45px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.levelButtonMediumG {
+  position: absolute;
+  top: 230px;
+  right: 313.5px;
+  padding: 15px 40px;
+  background-color: #ffdd1a;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.levelButtonHardG {
+  position: absolute;
+  top: 230px;
   right: 150px;
   padding: 15px 45px;
   background-color: #ffdd1a;
