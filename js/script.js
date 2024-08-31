@@ -149,20 +149,22 @@ let laserShot = () => {
 let asteroidSpeed = 3; // По умолчанию средняя скорость
 
 let moveAsteroid = (asteroid) => {
-    const animate = () => {
-        if (!isPaused) {
-            asteroid.style.top = (parseInt(asteroid.style.top) - asteroidSpeed) + 'px';
-        }
-        if (parseInt(asteroid.style.top) <= -asteroid.offsetHeight) {
-            container.removeChild(asteroid);
-            removeStars();
-            asteroidFunction();
-        } else {
-            requestAnimationFrame(animate);
-        }
-    };
-    asteroid.style.top = window.innerHeight + 'px';
-    animate();
+  const animate = () => {
+    if (!isPaused) {
+      asteroid.style.top = (parseInt(asteroid.style.top) - asteroidSpeed) + 'px'; // Используйте глобальную переменную asteroidSpeed
+    }
+    if (parseInt(asteroid.style.top) <= -asteroid.offsetHeight) {
+      if (asteroid.parentNode) {
+        asteroid.remove(); // Удаляем астероид, если он все еще находится в DOM
+        removeStars();
+        asteroidFunction();
+      }
+    } else {
+      requestAnimationFrame(animate);
+    }
+  };
+  asteroid.style.top = window.innerHeight + 'px';
+  animate();
 };
 
 
@@ -456,12 +458,14 @@ toggleMusic.addEventListener('click', (event) => {
 pauseButton.addEventListener('click', () => {
   isPaused = !isPaused; // Переключение состояния паузы
   pauseButton.textContent = isPaused ? '▶' : '||';
+  event.stopPropagation()
 });
 
 document.addEventListener('keydown', (event) => {
   if (event.code === 'KeyP') {
     isPaused = !isPaused; // Переключение состояния паузы
     pauseButton.textContent = isPaused ? '▶' : '||';
+    event.stopPropagation()
   }
 });
 
