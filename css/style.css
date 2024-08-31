@@ -386,9 +386,9 @@ body {
 }
 
 .title {
-  padding-top: 3rem;
+  padding-top: 2rem;
   color: yellow;
-  font-size: 6rem;
+  font-size: 5rem;
   text-decoration: underline;
 }
 
@@ -401,7 +401,7 @@ body {
   flex-direction: column;
   -ms-flex-pack: distribute;
   justify-content: space-around;
-  font-size: 6rem;
+  font-size: 5rem;
 }
 
 .highscoreContainer .highscoreTitle {
@@ -411,11 +411,11 @@ body {
 .startplay, .play {
   cursor: pointer;
   position: absolute;
-  top: 60%;
+  top: 70%;
   -webkit-transition: all 0.5s ease;
   transition: all 0.5s ease;
   color: rgba(190, 60, 60, 0.822);
-  font-size: 10rem;
+  font-size: 8rem;
   cursor: pointer;
 }
 .playerPlay {
@@ -444,9 +444,9 @@ body {
   text-align: center;
 }
 
-.startgame, .gameover:hover .play {
+.startgame:hover .play, .gameover:hover .play {
   color: rgba(238, 14, 14, 0.863);
-  font-size: 11rem;
+  font-size: 9rem;
 }
 
 .lives {
@@ -551,4 +551,45 @@ body {
   .playerInput {
     width: 90%;
   }
+}
+
+.difficulty {
+  padding: 1.2rem 2.4rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 20px; 
+}
+
+.easy {
+  background-color: #1a75ff; 
+}
+
+.medium {
+  background-color: #ffa500;
+}
+
+.hard {
+  background-color: #f52a2a; 
+}
+
+.difficulty:hover {
+  transform: scale(1.1); 
+}
+
+.easy:hover {
+  background-color: #005ce6; 
+}
+
+.medium:hover {
+  background-color: #e69500; 
+}
+
+.hard:hover {
+  background-color: #bf1a1a;
 }

@@ -146,23 +146,22 @@ let laserShot = () => {
   }
 };
 
+let asteroidSpeed = 3; // По умолчанию средняя скорость
+
 let moveAsteroid = (asteroid) => {
-  let speed = 3; // Скорость движения астероида
     const animate = () => {
-        if (!isPaused) {// Уменьшаем значение top для движения астероида вверх
-    asteroid.style.top = (parseInt(asteroid.style.top) - speed) + 'px';
+        if (!isPaused) {
+            asteroid.style.top = (parseInt(asteroid.style.top) - asteroidSpeed) + 'px';
         }
-      // Проверка на достижение верхней границы экрана
-    if (parseInt(asteroid.style.top) <= -asteroid.offsetHeight) {
-      container.removeChild(asteroid); // Удалить астероид из DOM
-      removeStars(); // Убрать звезду (жизнь) у игрока
-      asteroidFunction(); // Создать новый астероид
-    } else {
-      requestAnimationFrame(animate); // Запрос следующего кадра анимации
-    }
-  };
-  // Начальная установка top и запуск анимации
-  asteroid.style.top = window.innerHeight + 'px'; // Начальное положение астероида ниже экрана
+        if (parseInt(asteroid.style.top) <= -asteroid.offsetHeight) {
+            container.removeChild(asteroid);
+            removeStars();
+            asteroidFunction();
+        } else {
+            requestAnimationFrame(animate);
+        }
+    };
+    asteroid.style.top = window.innerHeight + 'px';
     animate();
 };
 
@@ -368,10 +367,23 @@ let gameoverFunc = () => {
 
 // Начало новой игры
 let startNewGame = () => {
-  loss = false
+  switch(difficultyLevel) {
+    case 'easy':
+      asteroidSpeed = 2;
+      stars = 5;
+      break;
+    case 'medium':
+      asteroidSpeed = 3;
+      stars = 3;
+      break;
+    case 'hard':
+      asteroidSpeed = 4;
+      stars = 1;
+      break;
+  }
+  loss = false;
   asteroidFunction();
   ship.style.visibility = 'visible';
-  stars = 3;
   counter.textContent = '0';
   showStars();
   gameover.style.display = 'none';
@@ -453,3 +465,38 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+// Уровень сложности
+let difficultyLevel = 'medium'; // по умолчанию
+
+let updateAsteroidSpeeds = () => {
+  document.querySelectorAll('.asteroid').forEach(asteroid => {
+    clearInterval(asteroid.movementInterval); // остановить анимацию
+    moveAsteroid(asteroid); // с новой скоростью
+  });
+};
+
+document.querySelectorAll('.difficulty').forEach(button => {
+  button.addEventListener('click', (event) => {
+    difficultyLevel = event.target.classList.contains('easy') ? 'easy' :
+                     event.target.classList.contains('medium') ? 'medium' : 'hard';
+
+    // уровни сложности
+    switch(difficultyLevel) {
+      case 'easy':
+        asteroidSpeed = 2;
+        stars = 4;
+        break;
+      case 'medium':
+        asteroidSpeed = 3;
+        stars = 3;
+        break;
+      case 'hard':
+        asteroidSpeed = 4;
+        stars = 1;
+        break;
+    }
+    
+    showStars(); // Обновляем жизни
+    updateAsteroidSpeeds(); // Обновляем скорость астероидов
+  });
+});
