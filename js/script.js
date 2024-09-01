@@ -36,11 +36,13 @@ let canShoot = true;
 let isLaserPlaying = false;
 let stars = 3;
 
-// Отображение звезд
+let difficulty = 'medium'; // Значение по умолчанию
+
+// Функция для отображения звезд
 let showStars = () => {
   lives.innerHTML = '';
   for (let i = 0; i < stars; i++) {
-    star = document.createElement('img');
+    let star = document.createElement('img');
     star.setAttribute('src', 'img/paw.png');
     star.classList.add('star');
     lives.append(star);
@@ -147,23 +149,22 @@ let laserShot = () => {
 };
 
 let moveAsteroid = (asteroid) => {
-  let speed = 3; // Скорость движения астероида
-    const animate = () => {
-        if (!isPaused) {// Уменьшаем значение top для движения астероида вверх
-    asteroid.style.top = (parseInt(asteroid.style.top) - speed) + 'px';
-        }
-      // Проверка на достижение верхней границы экрана
+  const animate = () => {
+    if (!isPaused) {
+      asteroid.style.top = (parseInt(asteroid.style.top) - asteroidSpeed) + 'px'; // Используйте глобальную переменную asteroidSpeed
+    }
     if (parseInt(asteroid.style.top) <= -asteroid.offsetHeight) {
-      container.removeChild(asteroid); // Удалить астероид из DOM
-      removeStars(); // Убрать звезду (жизнь) у игрока
-      asteroidFunction(); // Создать новый астероид
+      if (asteroid.parentNode) {
+        asteroid.remove(); // Удаляем астероид, если он все еще находится в DOM
+        removeStars();
+        asteroidFunction();
+      }
     } else {
-      requestAnimationFrame(animate); // Запрос следующего кадра анимации
+      requestAnimationFrame(animate);
     }
   };
-  // Начальная установка top и запуск анимации
-  asteroid.style.top = window.innerHeight + 'px'; // Начальное положение астероида ниже экрана
-    animate();
+  asteroid.style.top = window.innerHeight + 'px';
+  animate();
 };
 
 
@@ -338,42 +339,62 @@ let startGame = () => {
   document.addEventListener('keyup', handleLaserShotKey);
 };
 
+// Установка уровня сложности и обновление игры
+const setDifficulty = (level) => {
+  const difficulties = {
+    easy: { stars: 4, speed: 2 },
+    medium: { stars: 3, speed: 4 },
+    hard: { stars: 2, speed: 6 }
+  };
+  difficulty = level;
+  stars = difficulties[level].stars;
+  asteroidSpeed = difficulties[level].speed;
+  localStorage.setItem('difficulty', level);  // Сохраняем сложность
+  showStars();  // Обновляем отображение звезд
+};
+
+// Обработчики кликов для установки уровня сложности
+const handleEasyClick = () => {
+  setDifficulty('easy');
+};
+const handleMediumClick = () => {
+  setDifficulty('medium');
+};
+const handleHardClick = () => {
+  setDifficulty('hard');
+};
+
 let highscore = localStorage.getItem('highscore') || 0;
 document.getElementById('highscore').textContent = highscore;
-// Окончание игры
+// Экран проигрыша
 let gameoverFunc = () => {
-  loss = true;
+  loss = true;;
   gameover.style.display = 'flex';
   ship.style.visibility = 'hidden';
   isSpacePressed = false;
   canShoot = false;
-  
   let currentScore = parseInt(counter.textContent);
   let highscore = parseInt(localStorage.getItem('highscore')) || 0;
-
-  // Обновляем рекорд, если текущий счёт больше сохраненного рекорда
   if (currentScore > highscore) {
-      highscore = currentScore;
-      localStorage.setItem('highscore', highscore);
+    highscore = currentScore;
+    localStorage.setItem('highscore', highscore);
   }
-
-  // Обновляем отображение highscore в элементе gameover
-  document.getElementById('highscore-display').textContent = highscore; 
+  document.getElementById('highscore-display').textContent = highscore;
   document.getElementById('yourscore').textContent = currentScore;
-  document.removeEventListener('keydown', handleLaserShotKey);
-  document.removeEventListener('keyup', handleLaserShotKey);
-  document.removeEventListener('click', laserShot);
   play.addEventListener('click', startNewGame);
+  setupDifficultyButtons(); // Настраиваем кнопки сложности для экрана проигрыша
+  gameover.style.display = 'flex'; // Отображаем экран с информацией о проигрыше
 };
 
 // Начало новой игры
 let startNewGame = () => {
-  loss = false
-  asteroidFunction();
+  loss = false;
+  setDifficulty(difficulty)
+  // Убедитесь, что нет старых астероидов
+  document.querySelectorAll('.asteroid').forEach(asteroid => asteroid.remove());
   ship.style.visibility = 'visible';
-  stars = 3;
   counter.textContent = '0';
-  showStars();
+  asteroidFunction();
   gameover.style.display = 'none';
   isSpacePressed = false;
   canShoot = true;
@@ -382,17 +403,24 @@ let startNewGame = () => {
   document.addEventListener('keyup', handleLaserShotKey);
 };
 
-// Стартовая заставка игры
+// Описание событий для кнопок сложности
+const setupDifficultyButtons = () => {
+  const easyButtons = document.querySelectorAll('.easy');
+  const mediumButtons = document.querySelectorAll('.medium');
+  const hardButtons = document.querySelectorAll('.hard');
+  easyButtons.forEach(button => button.addEventListener('click', handleEasyClick));
+  mediumButtons.forEach(button => button.addEventListener('click', handleMediumClick));
+  hardButtons.forEach(button => button.addEventListener('click', handleHardClick));
+};
+
+// Начальная заставка
 let startgameFunc = () => {
+  setDifficulty(difficulty)
   startgame.style.display = 'flex';
+  setupDifficultyButtons(); // Настраиваем кнопки сложности
   startplay.addEventListener('click', () => {
     startgame.style.display = 'none';
-    startGame();
-    document.addEventListener('click', () => {
-      audio.play().catch(error => {
-        console.error("Ошибка воспроизведения музыки:", error);
-      });
-    }, { once: true });
+    startNewGame();
   });
 };
 
@@ -418,12 +446,16 @@ if (nameStorage) {
 // Управление музыкой
 let musicPlay = () => {
   document.addEventListener('click', () => {
-    audio.play().catch(error => {
-      console.error("Ошибка воспроизведения музыки:", error);
-    });
+    audio.play()
   }, { once: true });
 };
 setTimeout(musicPlay, 3000);
+
+// Добавляем обработчик события 'ended' для зацикливания музыки
+audio.addEventListener('ended', () => {
+  audio.currentTime = 0; // Перематываем на начало
+  audio.play()
+});
 
 toggleMusic.addEventListener('click', (event) => {
   event.stopPropagation();
@@ -441,7 +473,8 @@ toggleMusic.addEventListener('click', (event) => {
 });
 
 // Управление паузой игры
-pauseButton.addEventListener('click', () => {
+pauseButton.addEventListener('click', (event) => {
+  event.stopPropagation()
   isPaused = !isPaused; // Переключение состояния паузы
   pauseButton.textContent = isPaused ? '▶' : '||';
 });
