@@ -36,6 +36,22 @@ let canShoot = true;
 let isLaserPlaying = false;
 let stars = 3;
 
+const chooseDifficalty = (difficultyLevel)=>{
+  switch(difficultyLevel) {
+    case 'easy':
+      asteroidSpeed = 2;
+      stars = 4;
+      break;
+    case 'medium':
+      asteroidSpeed = 3;
+      stars = 3;
+      break;
+    case 'hard':
+      asteroidSpeed = 4;
+      stars = 1;
+      break;
+  }
+}
 // Отображение звезд
 let showStars = () => {
   lives.innerHTML = '';
@@ -369,20 +385,7 @@ let gameoverFunc = () => {
 
 // Начало новой игры
 let startNewGame = () => {
-  switch(difficultyLevel) {
-    case 'easy':
-      asteroidSpeed = 2;
-      stars = 4;
-      break;
-    case 'medium':
-      asteroidSpeed = 3;
-      stars = 3;
-      break;
-    case 'hard':
-      asteroidSpeed = 4;
-      stars = 1;
-      break;
-  }
+  chooseDifficalty(difficultyLevel)
   loss = false;
   asteroidFunction();
   ship.style.visibility = 'visible';
@@ -472,35 +475,16 @@ document.addEventListener('keydown', (event) => {
 // Уровень сложности
 let difficultyLevel = 'medium'; // по умолчанию
 
-let updateAsteroidSpeeds = () => {
-  document.querySelectorAll('.asteroid').forEach(asteroid => {
-    clearInterval(asteroid.movementInterval); // остановить анимацию
-    moveAsteroid(asteroid); // с новой скоростью
-  });
-};
-
 document.querySelectorAll('.difficulty').forEach(button => {
   button.addEventListener('click', (event) => {
-    difficultyLevel = event.target.classList.contains('easy') ? 'easy' :
-                     event.target.classList.contains('medium') ? 'medium' : 'hard';
-
+    difficultyLevel = event.target.classList.contains('easy') 
+    ? 'easy' 
+    : event.target.classList.contains('medium') 
+    ? 'medium' 
+    : 'hard';
     // уровни сложности
-    switch(difficultyLevel) {
-      case 'easy':
-        asteroidSpeed = 2;
-        stars = 4;
-        break;
-      case 'medium':
-        asteroidSpeed = 3;
-        stars = 3;
-        break;
-      case 'hard':
-        asteroidSpeed = 4;
-        stars = 1;
-        break;
-    }
-    
+    chooseDifficalty(difficultyLevel)
     showStars(); // Обновляем жизни
-    updateAsteroidSpeeds(); // Обновляем скорость астероидов
+  })
   });
-});
+  
