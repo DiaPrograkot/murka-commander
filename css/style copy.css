@@ -50,18 +50,6 @@ body {
   overflow: hidden;
 }
 
-.pauseButton {
-  position: absolute;
-  top: 100px;
-  right: 50px;
-  padding: 10px 20px;
-  background-color: #ffdd1a;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
 .ship {
   position: absolute;
   top: 6%;
@@ -69,7 +57,6 @@ body {
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   transform: rotate(180deg);
-  visibility: hidden;
 }
 
 .fighter {
@@ -223,15 +210,16 @@ body {
   width: 30px;
   height: 30px;
   -webkit-transition: top 1.4s linear;
-  top: 145px;
+  top: 130px;
   transition: top 1.4s linear;
   transform: rotate(180deg);
-  visibility: hidden;
+  /* transform: rotate(90deg); */
 }
 
 .asteroid {
   position: absolute;
   bottom: -1rem;
+  top: +1 rem;
   height: 4rem;
   width: 4rem;
   -webkit-transition: top 6s linear;
@@ -349,7 +337,7 @@ body {
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
 }
-.startgame, .gameover {
+.gameover {
   width: 80rem;
   height: 60vh;
   background-color: rgba(255, 255, 0, 0.151);
@@ -384,7 +372,7 @@ body {
   font-size: 2rem;
   text-decoration: underline;
 }
-.startgame, .gameover:hover {
+.gameover:hover {
   border: 20px solid rgb(255, 187, 0);
 }
 
@@ -410,7 +398,7 @@ body {
   margin-right: 1rem;
 }
 
-.startplay, .play {
+.play {
   cursor: pointer;
   position: absolute;
   top: 60%;
@@ -420,7 +408,6 @@ body {
   font-size: 10rem;
   cursor: pointer;
 }
-
 .playerPlay {
   cursor: pointer;
   margin-top: 2rem;
@@ -447,7 +434,7 @@ body {
   text-align: center;
 }
 
-.startgame, .gameover:hover .play {
+.gameover:hover .play {
   color: rgba(238, 14, 14, 0.863);
   font-size: 11rem;
 }
@@ -487,13 +474,7 @@ body {
 }
 /*# sourceMappingURL=style.css.map */
 
-
-.highscoreContainer {
-  display: flex;
-  flex-direction: column;
-}
-
-.difficulty {
+.difficulty, .difficulty-buttons {
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -511,11 +492,31 @@ body {
   min-height: 60px; /* Минимальная высота кнопки */
 }
 
+.difficulty-buttons button {
+  padding: 1.5rem 3rem; /* Увеличенные отступы */
+  font-size: 1.5rem; /* Увеличенный размер шрифта */
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Более округлённые углы */
+  transition: background-color 0.3s;
+  min-width: 200px; /* Минимальная ширина кнопки */
+  min-height: 60px; /* Минимальная высота кнопки */
+}
+
 .difficulty .easy { background-color: #4CAF50; color: white; }
 .difficulty .medium { background-color: #FF9800; color: white; }
 .difficulty .hard { background-color: #F44336; color: white; }
 
+.difficulty-buttons .easy { background-color: #4CAF50; color: white; }
+.difficulty-buttons .medium { background-color: #FF9800; color: white; }
+.difficulty-buttons .hard { background-color: #F44336; color: white; }
+
 .difficulty button:hover {
+  background-color: #333;
+  color: white;
+}
+
+.difficulty-buttons button:hover {
   background-color: #333;
   color: white;
 }
