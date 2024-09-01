@@ -451,12 +451,6 @@ let musicPlay = () => {
 };
 setTimeout(musicPlay, 3000);
 
-// Добавляем обработчик события 'ended' для зацикливания музыки
-audio.addEventListener('ended', () => {
-  audio.currentTime = 0; // Перематываем на начало
-  audio.play()
-});
-
 toggleMusic.addEventListener('click', (event) => {
   event.stopPropagation();
   if (audio.paused) {
