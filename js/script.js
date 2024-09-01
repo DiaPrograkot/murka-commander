@@ -372,7 +372,7 @@ let startNewGame = () => {
   switch(difficultyLevel) {
     case 'easy':
       asteroidSpeed = 2;
-      stars = 5;
+      stars = 4;
       break;
     case 'medium':
       asteroidSpeed = 3;
