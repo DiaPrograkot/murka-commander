@@ -551,8 +551,6 @@ body {
   .playerInput {
     width: 90%;
   }
-<<<<<<< HEAD
-=======
 }
 
 
@@ -601,5 +599,4 @@ body {
 .difficulty-buttons button:hover {
   background-color: #333;
   color: white;
->>>>>>> origin/diana
 }
