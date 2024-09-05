@@ -39,8 +39,8 @@ let stars = 3;
 let difficulty = 'medium'; // Значение по умолчанию
 
 // Импортируем Trystero
-import { joinRoom } from 'https://cdn.jsdelivr.net/npm/trystero/torrent.js';
-
+(async () => {
+  const { joinRoom } = await import('https://cdn.jsdelivr.net/npm/trystero/torrent.js');
 // Подключаемся к комнате
 const config = { appId: 'chat-app' };
 const room = joinRoom(config, 'chat-room');
@@ -86,6 +86,7 @@ getMessage((msg, peerId) => {
   li.textContent = `${peerId}: ${msg}`;
   document.getElementById('messages').appendChild(li);
 });
+})();
 
 
 // Функция для отображения звезд
