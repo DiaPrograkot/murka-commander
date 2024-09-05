@@ -479,3 +479,28 @@ document.addEventListener('keydown', (event) => {
     pauseButton.textContent = isPaused ? '▶' : '||';
   }
 });
+// Импортируем Trystero
+import { joinRoom } from 'https://cdn.jsdelivr.net/npm/trystero/torrent.js';
+
+// Подключаемся к комнате
+const config = { appId: 'chat-app' };
+const room = joinRoom(config, 'chat-room');
+
+// Создаем отправку и получение сообщений
+const [sendMessage, getMessage] = room.makeAction('message');
+
+// Обработчик для кнопки отправки сообщений
+document.getElementById('send').addEventListener('click', () => {
+  const message = document.getElementById('message').value;
+  if (message) {
+    sendMessage(message, null);  // Отправляем сообщение всем участникам
+    document.getElementById('message').value = ''; // Очищаем поле ввода после отправки
+  }
+});
+
+// Получение сообщений от других пользователей
+getMessage((msg, peerId) => {
+  const li = document.createElement('li');
+  li.textContent = `${peerId}: ${msg}`;
+  document.getElementById('messages').appendChild(li);
+});

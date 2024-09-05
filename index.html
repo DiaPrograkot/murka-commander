@@ -14,12 +14,7 @@
     </video>
     <div class="container">
       <div class="ship">
-        <img
-          src="img/murka3.png"
-          alt="fighter"
-          class="fighter"
-          draggable="false"
-        />
+        <img src="img/murka3.png" alt="fighter" class="fighter" draggable="false" />
         <div class="flameContainer">
           <div class="fighterFlame">
             <div class="red flame"></div>
@@ -67,20 +62,21 @@
         <span class="muteSpeaker"></span>
       </div>
       <div class="backgroundContainer">
-        <img
-          src="img/planet-earth.svg"
-          alt="planet-earth"
-          class="planet earthImg"
-        />
-        <img
-          src="img/planet-mars.svg"
-          alt="planet-mars"
-          class="planet marsImg"
-        />
+        <img src="img/planet-earth.svg" alt="planet-earth" class="planet earthImg" />
+        <img src="img/planet-mars.svg" alt="planet-mars" class="planet marsImg" />
         <img src="img/milky-way.svg" alt="milky-way" class="planet spaceImg" />
       </div>
       <div class="lives"></div>
     </div>
+
+    <!-- Добавляем интерфейс для чата -->
+    <div id="chatContainer">
+      <h1>Trystero Chat</h1>
+      <input type="text" id="message" placeholder="Введите сообщение" />
+      <button id="send">Отправить</button>
+      <ul id="messages"></ul>
+    </div>
+
     <audio class="audio" loop>
       <source src="music/space.mp3" type="audio/mpeg"/>
     </audio>
