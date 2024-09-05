@@ -45,6 +45,22 @@ import { joinRoom } from 'https://cdn.jsdelivr.net/npm/trystero/torrent.js';
 const config = { appId: 'chat-app' };
 const room = joinRoom(config, 'chat-room');
 
+room.onPeerJoin(peerId => {
+  console.log(`Пользователь ${peerId} подключился к комнате.`);
+});
+
+room.onPeerLeave(peerId => {
+  console.log(`Пользователь ${peerId} отключился от комнаты.`);
+});
+
+room.onConnect(() => {
+  console.log("Соединение с комнатой установлено");
+});
+
+room.onDisconnect(() => {
+  console.log("Соединение с комнатой потеряно");
+});
+
 // Создаем отправку и получение сообщений
 const [sendMessage, getMessage] = room.makeAction('message');
 
@@ -52,17 +68,25 @@ const [sendMessage, getMessage] = room.makeAction('message');
 document.getElementById('send').addEventListener('click', () => {
   const message = document.getElementById('message').value;
   if (message) {
-    sendMessage(message, null);  // Отправляем сообщение всем участникам
-    document.getElementById('message').value = ''; // Очищаем поле ввода после отправки
+    console.log("Отправка сообщения:", message);
+    sendMessage(message, null)
+      .then(() => console.log("Сообщение отправлено успешно"))
+      .catch(err => console.error("Ошибка отправки сообщения:", err));
+    document.getElementById('message').value = '';
+  } else {
+    console.log("Сообщение пустое");
   }
 });
 
+
 // Получение сообщений от других пользователей
 getMessage((msg, peerId) => {
+  console.log(`Сообщение от ${peerId}: ${msg}`);
   const li = document.createElement('li');
   li.textContent = `${peerId}: ${msg}`;
   document.getElementById('messages').appendChild(li);
 });
+
 
 // Функция для отображения звезд
 let showStars = () => {
