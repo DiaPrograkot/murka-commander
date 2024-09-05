@@ -40,7 +40,7 @@ let difficulty = 'medium'; // Значение по умолчанию
 
 // Импортируем Trystero
 (async () => {
-  const { joinRoom } = await import('https://cdn.jsdelivr.net/npm/trystero/torrent.js');
+  const { joinRoom } = await import('https://unpkg.com/trystero@latest/dist/trystero.bundle.js');
 // Подключаемся к комнате
 const config = { appId: 'chat-app' };
 const room = joinRoom(config, 'chat-room');
