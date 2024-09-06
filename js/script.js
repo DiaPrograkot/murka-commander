@@ -1,9 +1,11 @@
 // Импортируем Trystero
 (async () => {
-  const { joinRoom } = await import('https://unpkg.com/trystero@0.20.0/dist/trystero.min.js');
-// Подключаемся к комнате
-const config = { appId: 'chat-app' };
-const room = joinRoom(config, 'chat-room');
+  const { joinRoom } = await import('trystero');
+  // Подключаемся к комнате
+  const config = { appId: 'chat-app' };
+  const room = joinRoom(config, 'chat-room');
+  // Дополнительно можно добавить дальнейшую логику
+})();
 
 room.onPeerJoin(peerId => {
   console.log(`Пользователь ${peerId} подключился к комнате.`);
@@ -46,7 +48,6 @@ getMessage((msg, peerId) => {
   li.textContent = `${peerId}: ${msg}`;
   document.getElementById('messages').appendChild(li);
 });
-})();
 
 // Определение переменных
 let container = document.querySelector('.container');
