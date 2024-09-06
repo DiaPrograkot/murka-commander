@@ -26,7 +26,7 @@ let isPaused = false
 let easyButton = document.querySelector('#easy')
 let mediumButton = document.querySelector('#medium')
 let hardButton = document.querySelector('#hard')
-let highscoreNumber = document.querySelector('.highscoreNumber')
+let yourscoreNumber = document.querySelector('.yourscoreNumber')
 
 
 let asteroidElement
@@ -262,8 +262,8 @@ let setAsteroidPosition = asteroid => {
     })
     document.removeEventListener('click', laserShot)
     isGameOver = true
-    highscoreNumber.textContent = counter.textContent
-    localStorage.setItem('highscore', highscoreNumber.textContent)
+    yourscoreNumber.textContent = counter.textContent
+    localStorage.setItem('highscore', yourscoreNumber.textContent)
   }
 
   
@@ -274,7 +274,6 @@ let startGame = () => {
       showStars()
       gameover.style.display = 'none'
       ship.style.display = 'flex'
-      console.log(`stars after start: ${stars}`)
       asteroidFunction()
       event.stopPropagation()
       document.addEventListener('click', laserShot)
