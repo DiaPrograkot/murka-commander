@@ -1,6 +1,6 @@
 // Импортируем Trystero
 (async () => {
-  const { joinRoom } = await import('https://cdn.jsdelivr.net/npm/trystero@0.18.4/dist/trystero.min.js');
+  const { joinRoom } = await import('https://unpkg.com/trystero@0.20.0/dist/trystero.min.js');
 // Подключаемся к комнате
 const config = { appId: 'chat-app' };
 const room = joinRoom(config, 'chat-room');
