@@ -1,48 +1,46 @@
-import checkProxy from 'proxy-check'
-const proxies = await (
-  await fetch(
-    'https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all'
-  )
-).text()
-console.log(
-  await Promise.any(
-    proxies
-      .split('\r\n')
-      .slice(0, 99)
-      .map(addr => {
-        const [host, port] = addr.split(':')
-        return checkProxy({host, port}).then(() => addr)
-      })
-  )
-)// Используем async функцию для корректной загрузки
-(async () => {
-  try {
-    // Импортируем библиотеку Trystero
-    const { joinRoom } = await import("https://unpkg.com/trystero?module");
-    // Конфигурация приложения
-    const config = { appId: "chat-app" };
-    // Присоединяемся к комнате
-    const room = joinRoom(config, "chat-room");
-    // Обработка присоединения пользователей
-    room.onPeerJoin((peerId) => {
-      console.log(`Пользователь ${peerId} подключился к комнате.`);
-    });
-    // Обработка выхода пользователей
-    room.onPeerLeave((peerId) => {
-      console.log(`Пользователь ${peerId} отключился от комнаты.`);
-    });
-    // Отправка сообщения
-    const sendMessage = (message) => {
-      room.send(message);
-    };
-    // Приём сообщений
-    room.onMessage((message, peerId) => {
-      console.log(`Сообщение от ${peerId}: ${message}`);
-    });
-  } catch (error) {
-    console.error("Ошибка при подключении к Trystero: ", error);
-  }
-})();
+import React, { useState } from 'react';
+import { useRoom } from 'trystero/react';
+
+const App = () => {
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  
+  // Инициализация комнаты
+  const room = useRoom({ appId: 'my-cool-app' });
+  
+  // Создаем соединение для отправки и получения сообщений
+  const [sendMessage, getMessage] = room.makeAction('chat-message');
+  
+  // Когда получаем сообщение
+  getMessage((message) => {
+    setMessages(prevMessages => [...prevMessages, message]);
+  });
+  
+  // Отправка сообщения
+  const handleSend = () => {
+    sendMessage(inputValue);
+    setInputValue('');
+  };
+
+  return (
+    <div>
+      <h1>Chat Room</h1>
+      <div>
+        {messages.map((msg, index) => (
+          <p key={index}>{msg}</p>
+        ))}
+      </div>
+      <input 
+        value={inputValue} 
+        onChange={(e) => setInputValue(e.target.value)} 
+      />
+      <button onClick={handleSend}>Send</button>
+    </div>
+  );
+};
+
+export default App;
+
 
 // Определение переменных
 let container = document.querySelector(".container");
