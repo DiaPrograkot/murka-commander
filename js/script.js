@@ -1,53 +1,39 @@
-// Импортируем Trystero
-(async () => {
-  const { joinRoom } = await import('trystero');
-  // Подключаемся к комнате
-  const config = { appId: 'chat-app' };
-  const room = joinRoom(config, 'chat-room');
-  // Дополнительно можно добавить дальнейшую логику
-})();
+// Используем async функцию для корректной загрузки
+    (async () => {
+      try {
+        // Импортируем библиотеку Trystero
+        const { joinRoom } = await import('https://unpkg.com/trystero?module');
+        
+        // Конфигурация приложения
+        const config = { appId: 'chat-app' };
 
-room.onPeerJoin(peerId => {
-  console.log(`Пользователь ${peerId} подключился к комнате.`);
-});
+        // Присоединяемся к комнате
+        const room = joinRoom(config, 'chat-room');
 
-room.onPeerLeave(peerId => {
-  console.log(`Пользователь ${peerId} отключился от комнаты.`);
-});
+        // Обработка присоединения пользователей
+        room.onPeerJoin(peerId => {
+          console.log(`Пользователь ${peerId} подключился к комнате.`);
+        });
 
-room.onConnect(() => {
-  console.log("Соединение с комнатой установлено");
-});
+        // Обработка выхода пользователей
+        room.onPeerLeave(peerId => {
+          console.log(`Пользователь ${peerId} отключился от комнаты.`);
+        });
 
-room.onDisconnect(() => {
-  console.log("Соединение с комнатой потеряно");
-});
+        // Отправка сообщения
+        const sendMessage = message => {
+          room.send(message);
+        };
 
-// Создаем отправку и получение сообщений
-const [sendMessage, getMessage] = room.makeAction('message');
+        // Приём сообщений
+        room.onMessage((message, peerId) => {
+          console.log(`Сообщение от ${peerId}: ${message}`);
+        });
 
-// Обработчик для кнопки отправки сообщений
-document.getElementById('send').addEventListener('click', () => {
-  const message = document.getElementById('message').value;
-  if (message) {
-    console.log("Отправка сообщения:", message);
-    sendMessage(message, null)
-      .then(() => console.log("Сообщение отправлено успешно"))
-      .catch(err => console.error("Ошибка отправки сообщения:", err));
-    document.getElementById('message').value = '';
-  } else {
-    console.log("Сообщение пустое");
-  }
-});
-
-
-// Получение сообщений от других пользователей
-getMessage((msg, peerId) => {
-  console.log(`Сообщение от ${peerId}: ${msg}`);
-  const li = document.createElement('li');
-  li.textContent = `${peerId}: ${msg}`;
-  document.getElementById('messages').appendChild(li);
-});
+      } catch (error) {
+        console.error('Ошибка при подключении к Trystero: ', error);
+      }
+    })();
 
 // Определение переменных
 let container = document.querySelector('.container');
