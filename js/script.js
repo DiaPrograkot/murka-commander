@@ -1,43 +1,3 @@
-// Определение переменных
-let container = document.querySelector('.container');
-let playerNameContainer = document.querySelector('.playerNameContainer');
-let playerInput = document.querySelector('.playerInput');
-let playerName = '';
-let playerPlay = document.querySelector('.playerPlay');
-let playerLabel = document.querySelector('.playerLabel');
-let ship = document.querySelector('.ship');
-let gameover = document.querySelector('.gameover');
-let startgame = document.querySelector('.startgame');
-let audio = document.querySelector('.audio');
-let lasersound = document.querySelector('.lasersound');
-let crash = document.querySelector('.crash');
-let counter = document.querySelector('.counter');
-let toggleMusic = document.querySelector('.toggleMusic');
-let muteSpeaker = toggleMusic.querySelector('.muteSpeaker');
-let musicButton = toggleMusic.querySelector('.musicButton');
-let play = document.querySelector('.play');
-let startplay = document.querySelector('.startplay');
-let earth = document.querySelector('.earthImg');
-let mars = document.querySelector('.marsImg');
-let space = document.querySelector('.spaceImg');
-let lives = document.querySelector('.lives');
-let videoContainer = document.querySelector('.videoContainer');
-let videoSource = videoContainer.querySelector('source');
-let star;
-
-let isPaused = false;
-
-let loss = false;
-// Переменные состояния
-let moveLeft = false;
-let moveRight = false;
-let isSpacePressed = false;
-let canShoot = true;
-let isLaserPlaying = false;
-let stars = 3;
-
-let difficulty = 'medium'; // Значение по умолчанию
-
 // Импортируем Trystero
 (async () => {
   const { joinRoom } = await import('https://unpkg.com/trystero@latest/dist/trystero.bundle.js');
@@ -88,6 +48,45 @@ getMessage((msg, peerId) => {
 });
 })();
 
+// Определение переменных
+let container = document.querySelector('.container');
+let playerNameContainer = document.querySelector('.playerNameContainer');
+let playerInput = document.querySelector('.playerInput');
+let playerName = '';
+let playerPlay = document.querySelector('.playerPlay');
+let playerLabel = document.querySelector('.playerLabel');
+let ship = document.querySelector('.ship');
+let gameover = document.querySelector('.gameover');
+let startgame = document.querySelector('.startgame');
+let audio = document.querySelector('.audio');
+let lasersound = document.querySelector('.lasersound');
+let crash = document.querySelector('.crash');
+let counter = document.querySelector('.counter');
+let toggleMusic = document.querySelector('.toggleMusic');
+let muteSpeaker = toggleMusic.querySelector('.muteSpeaker');
+let musicButton = toggleMusic.querySelector('.musicButton');
+let play = document.querySelector('.play');
+let startplay = document.querySelector('.startplay');
+let earth = document.querySelector('.earthImg');
+let mars = document.querySelector('.marsImg');
+let space = document.querySelector('.spaceImg');
+let lives = document.querySelector('.lives');
+let videoContainer = document.querySelector('.videoContainer');
+let videoSource = videoContainer.querySelector('source');
+let star;
+
+let isPaused = false;
+
+let loss = false;
+// Переменные состояния
+let moveLeft = false;
+let moveRight = false;
+let isSpacePressed = false;
+let canShoot = true;
+let isLaserPlaying = false;
+let stars = 3;
+
+let difficulty = 'medium'; // Значение по умолчанию
 
 // Функция для отображения звезд
 let showStars = () => {
