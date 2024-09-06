@@ -26,6 +26,8 @@ let isPaused = false
 let easyButton = document.querySelector('#easy')
 let mediumButton = document.querySelector('#medium')
 let hardButton = document.querySelector('#hard')
+let highscoreNumber = document.querySelector('.highscoreNumber')
+
 
 let asteroidElement
 let asteroidShapeNumber
@@ -62,6 +64,7 @@ hardButton.addEventListener('click', () => {
 
 //Display stars
 let showStars = () => {
+
   switch (checkingDiff) {
     case 'easyWasPressed':
       stars = 4
@@ -75,7 +78,7 @@ let showStars = () => {
     default:
       stars = 3
   }
-  
+
   lives.innerHTML = ''
   while (stars > 0) {
     star = document.createElement('img')
@@ -84,13 +87,20 @@ let showStars = () => {
     lives.append(star)
     stars--
   }
-  return stars
+  switch (checkingDiff) {
+    case 'easyWasPressed':
+      stars = 4
+      break;
+    case 'mediumWasPressed':
+      stars = 3
+      break;
+    case 'hardWasPressed':
+      stars = 2
+      break;
+    default:
+      stars = 3
+  }
 }
-
- 
-
-
-
 
 
 let setCounter = () => {
@@ -242,6 +252,7 @@ let setAsteroidPosition = asteroid => {
     asteroid.style.width = `${asteroidShapeSize}rem`
   }
 
+  let scoreStorage = localStorage.getItem('')
   //Gameover Popup
   let gameoverFunc = () => {
     gameover.style.display = 'flex'
@@ -251,14 +262,16 @@ let setAsteroidPosition = asteroid => {
     })
     document.removeEventListener('click', laserShot)
     isGameOver = true
+    highscoreNumber.textContent = counter.textContent
+    localStorage.setItem('highscore', highscoreNumber.textContent)
   }
 
   
   //start 
-  let startGame = () => {
-    showStars()
+let startGame = () => {
     gameover.style.display = 'flex'
-    play.addEventListener('click', event => {
+  play.addEventListener('click', event => {
+      showStars()
       gameover.style.display = 'none'
       ship.style.display = 'flex'
       console.log(`stars after start: ${stars}`)
