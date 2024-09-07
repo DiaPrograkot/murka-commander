@@ -1,4 +1,4 @@
-import createRoom from 'https://cdn.jsdelivr.net/npm/trystero@0.20.0/+esm';
+import {joinRoom} from 'trystero'
 
 const room = createRoom({ appId: 'my-cool-app' });
 
