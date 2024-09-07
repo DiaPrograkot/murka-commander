@@ -1,4 +1,4 @@
-import createRoom from 'trystero';
+import createRoom from './trystero';
 
 const room = createRoom({ appId: 'my-cool-app' });
 
@@ -25,9 +25,6 @@ function addMessageToChatBox(message) {
   newMessage.textContent = message;
   chatBox.appendChild(newMessage);
 }
-
-
-
 
 // Определение переменных
 let container = document.querySelector(".container");
