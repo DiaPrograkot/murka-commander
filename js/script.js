@@ -1,6 +1,6 @@
 import {joinRoom} from 'trystero'
-
-const room = createRoom({ appId: 'my-cool-app' });
+const config = {appId: 'san_narciso_3d'}
+const room = joinRoom(config, 'yoyodyne')
 
 const messageInput = document.getElementById('messageInput');
 const sendMessageBtn = document.getElementById('sendMessageBtn');
