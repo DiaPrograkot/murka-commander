@@ -1,4 +1,4 @@
-import { createRoom } from './node_modules';
+import createRoom from 'trystero';
 
 const room = createRoom({ appId: 'my-cool-app' });
 
