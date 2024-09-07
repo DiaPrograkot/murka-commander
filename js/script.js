@@ -1,45 +1,32 @@
-import React, { useState } from 'react';
-import { useRoom } from 'trystero/react';
+import { createRoom } from './node_modules';
 
-const App = () => {
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState('');
-  
-  // Инициализация комнаты
-  const room = useRoom({ appId: 'my-cool-app' });
-  
-  // Создаем соединение для отправки и получения сообщений
-  const [sendMessage, getMessage] = room.makeAction('chat-message');
-  
-  // Когда получаем сообщение
-  getMessage((message) => {
-    setMessages(prevMessages => [...prevMessages, message]);
-  });
-  
-  // Отправка сообщения
-  const handleSend = () => {
-    sendMessage(inputValue);
-    setInputValue('');
-  };
+const room = createRoom({ appId: 'my-cool-app' });
 
-  return (
-    <div>
-      <h1>Chat Room</h1>
-      <div>
-        {messages.map((msg, index) => (
-          <p key={index}>{msg}</p>
-        ))}
-      </div>
-      <input 
-        value={inputValue} 
-        onChange={(e) => setInputValue(e.target.value)} 
-      />
-      <button onClick={handleSend}>Send</button>
-    </div>
-  );
-};
+const messageInput = document.getElementById('messageInput');
+const sendMessageBtn = document.getElementById('sendMessageBtn');
+const chatBox = document.getElementById('chatBox');
 
-export default App;
+// Подключаемся к комнате и обрабатываем полученные сообщения
+const [sendMessage, getMessage] = room.makeAction('chat-message');
+
+sendMessageBtn.addEventListener('click', () => {
+  const message = messageInput.value;
+  sendMessage(message); // Отправляем сообщение через Trystero
+  addMessageToChatBox(`You: ${message}`);
+  messageInput.value = ''; // Очищаем поле ввода
+});
+
+getMessage((message) => {
+  addMessageToChatBox(`Peer: ${message}`);
+});
+
+function addMessageToChatBox(message) {
+  const newMessage = document.createElement('div');
+  newMessage.textContent = message;
+  chatBox.appendChild(newMessage);
+}
+
+
 
 
 // Определение переменных
