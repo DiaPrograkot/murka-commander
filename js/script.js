@@ -1,31 +1,3 @@
-import {joinRoom} from 'trystero'
-const config = {appId: 'san_narciso_3d'}
-const room = joinRoom(config, 'yoyodyne')
-
-const messageInput = document.getElementById('messageInput');
-const sendMessageBtn = document.getElementById('sendMessageBtn');
-const chatBox = document.getElementById('chatBox');
-
-// Подключаемся к комнате и обрабатываем полученные сообщения
-const [sendMessage, getMessage] = room.makeAction('chat-message');
-
-sendMessageBtn.addEventListener('click', () => {
-  const message = messageInput.value;
-  sendMessage(message); // Отправляем сообщение через Trystero
-  addMessageToChatBox(`You: ${message}`);
-  messageInput.value = ''; // Очищаем поле ввода
-});
-
-getMessage((message) => {
-  addMessageToChatBox(`Peer: ${message}`);
-});
-
-function addMessageToChatBox(message) {
-  const newMessage = document.createElement('div');
-  newMessage.textContent = message;
-  chatBox.appendChild(newMessage);
-}
-
 // Определение переменных
 let container = document.querySelector(".container");
 let playerNameContainer = document.querySelector(".playerNameContainer");
@@ -65,6 +37,7 @@ let isLaserPlaying = false;
 let stars = 3;
 
 let difficulty = "medium"; // Значение по умолчанию
+let asteroidSpeed = 4; // Инициализация скорости астероида
 
 // Функция для отображения звезд
 let showStars = () => {
