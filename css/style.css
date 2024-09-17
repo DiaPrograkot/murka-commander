@@ -332,7 +332,8 @@ body {
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
 }
-.gameover {
+
+.start, .gameover {
   width: 80rem;
   height: 60vh;
   background-color: rgba(255, 255, 0, 0.151);
@@ -367,9 +368,7 @@ body {
   font-size: 2rem;
   text-decoration: underline;
 }
-.gameover:hover {
-  border: 20px solid rgb(255, 187, 0);
-}
+ 
 
 .title {
   padding-top: 3rem;
@@ -378,7 +377,7 @@ body {
   text-decoration: underline;
 }
 
-.highscoreContainer {
+.highscoreContainer, .YourscoreNumber, .HighscoreTitleOther{
   padding-top: 10rem;
   color: #db1818;
   display: -webkit-box;
@@ -393,7 +392,7 @@ body {
   margin-right: 1rem;
 }
 
-.play {
+.play, .tryAgainButton {
   cursor: pointer;
   position: absolute;
   top: 60%;
@@ -429,7 +428,7 @@ body {
   text-align: center;
 }
 
-.gameover:hover .play {
+.play:hover, .tryAgainButton:hover {
   color: rgba(238, 14, 14, 0.863);
   font-size: 11rem;
 }
@@ -512,18 +511,7 @@ body {
     left: 10px;
     top: 10px;
   }
-  .gameover {
-    width: 90%;
-    height: 60vh;
-    background-color: rgba(255, 255, 0, 0.151);
-    border-radius: 10px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    display: none;
-  }
+
   .title {
     font-size: 3rem;
   }
@@ -570,6 +558,10 @@ body {
   cursor: pointer; /* Курсор в виде руки */
   border-radius: 10px; /* Более скругленные углы */
   transition: background-color 0.3s; /* Плавный переход фона */
+}
+
+.diffButton:hover {
+  transform: scale(1.2);
 }
 
 #easy {

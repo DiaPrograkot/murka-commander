@@ -354,7 +354,7 @@ let startGame = () => {
   let musicPlay = setTimeout(() => {
     audio.play()
     audio.volume = 0.1
-  }, 4000)
+  }, 2000)
 
   //Toggle music
   toggleMusic.addEventListener('click', event => {
