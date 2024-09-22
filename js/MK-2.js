@@ -52,7 +52,11 @@ let checkingDiff
 let coords = null
 let lastcoords = null
 
-let scoreStorage = localStorage.getItem('counter')
+let scoreStorage = localStorage.getItem('yourScoreNumber')
+
+let highscoreNumber = document.querySelector('.highscoreNumber')
+
+let highscoreNumberOther = document.querySelector('.highscoreNumberOther')
 
 
 
@@ -315,11 +319,16 @@ let laserShot = () => {
     ship.style.display = 'none'
     tryAgainButton.addEventListener('click', e => {
       location.reload()
+      gameFSM.setState(States.STARTGAME)
     })
     document.removeEventListener('click', laserShot)
     isGameOver = true
-    yourScoreNumber.textContent = counter.textContent
-    localStorage.setItem('highscore', yourScoreNumber.textContent)
+    yourScoreNumber.textContent += counter.textContent
+    if (parseInt(counter.textContent) > parseInt(localStorage.getItem('highscore'))) {
+      localStorage.setItem('highscore', counter.textContent)
+    }
+    
+    gameFSM.setState(States.GAMEOVER)
   }
 
   
@@ -536,7 +545,7 @@ const beforeStartState  = {
     ship.style.display = 'none'
     start.style.display = 'flex'
     pauseButton.style.display = 'none'
-    
+    highscoreNumber.textContent = localStorage.getItem('highscore')
 
     
 
@@ -608,7 +617,7 @@ const gameoverState  = {
     console.log('Entering gameoverState state');
     gameover.style.display = 'flex'
     ship.style.display = 'none'
-    
+    highscoreNumberOther.textContent = localStorage.getItem('highscore')
 
   },
   update: () => {

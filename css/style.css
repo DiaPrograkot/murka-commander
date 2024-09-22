@@ -377,7 +377,7 @@ body {
   text-decoration: underline;
 }
 
-.highscoreContainer, .yourScoreNumber, .HighscoreTitleOther{
+.highscoreContainer, .yourScoreNumber, .HighscoreTitleOther, .highscoreNumberOther{
   padding-top: 10rem;
   color: #db1818;
   display: -webkit-box;
@@ -388,7 +388,7 @@ body {
   font-size: 6rem;
 }
 
-.highscoreContainer .highscoreTitle {
+.highscoreContainer .highscoreTitle, .highscoreContainerOther {
   margin-right: 1rem;
 }
 
