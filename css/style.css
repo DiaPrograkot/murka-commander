@@ -377,7 +377,7 @@ body {
   text-decoration: underline;
 }
 
-.highscoreContainer, .YourscoreNumber, .HighscoreTitleOther{
+.highscoreContainer, .yourScoreNumber, .HighscoreTitleOther{
   padding-top: 10rem;
   color: #db1818;
   display: -webkit-box;

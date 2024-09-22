@@ -23,11 +23,10 @@ let videoContainer = document.querySelector('.videoContainer')
 let videoSource = videoContainer.querySelector('source')
 let star
 let pauseButton = document.querySelector('.pause-button')
-let isPaused = false
 let easyButton = document.querySelector('#easy')
 let mediumButton = document.querySelector('#medium')
 let hardButton = document.querySelector('#hard')
-let yourscoreNumber = document.querySelector('.yourscoreNumber')
+let yourScoreNumber = document.querySelector('.yourScoreNumber')
 let tryAgainButton = document.querySelector('.tryAgainButton')
 
 let asteroidElement
@@ -49,6 +48,13 @@ isGameOver = false
 
 //проверка уровня сложности
 let checkingDiff
+
+let coords = null
+let lastcoords = null
+
+let scoreStorage = localStorage.getItem('counter')
+
+
 
 easyButton.addEventListener('click', () => {
   checkingDiff = 'easyWasPressed'
@@ -108,110 +114,14 @@ let setCounter = () => {
   counter.textContent = parseInt(counter.textContent) + 1
 }
 
-//Plays laser sound
-let laserSound = () => {
-  lasersound.pause()
-  lasersound.currentTime = 0
-  lasersound.volume = 0.1
-  lasersound.play()
+  //Create asteroid
+  let createAsteroid = () => {
+    asteroidElement = document.createElement('img')
+    asteroidElement.classList.add('asteroid')
+    asteroidElement.setAttribute('draggable', 'false')
+    return asteroidElement
 }
-
-//Remove laser when asteroid is hit
-let removeLaser = laser => {
-  if (laser) {
-    container.removeChild(laser)
-  }
-}
-//Remove lasers when hit the bottom of the window
-let removeLasers = () => {
-  let oldLasers = document.querySelectorAll('.laser')
-  for (let oldLaser of oldLasers) {
-    if (oldLaser.getBoundingClientRect().top >= window.innerHeight) {
-      oldLaser.remove()
-  }
-  }
-}
-
-//Laser movement
-let laserMovement = laser => {
-  // laser.style.top = laser.offsetTop - window.innerHeight + 'px'
-  laser.style.top = window.innerHeight + 'px'
-    if (
-      laser.offsetTop <=
-        asteroidElement.offsetTop + asteroidElement.offsetHeight - 10 &&
-      laser.offsetTop >= asteroidElement.offsetTop
-    ) {
-      if (
-        laser.offsetLeft >
-          asteroidElement.offsetLeft - asteroidElement.offsetWidth / 2 &&
-        laser.offsetLeft <
-          asteroidElement.offsetLeft + asteroidElement.offsetWidth
-      ) {
-        removeLaser(laser)
-        //Make asteroid smaller when hit
-        if (asteroidElement.offsetWidth > 80) {
-          asteroidElement.style.width = asteroidElement.offsetWidth - 40 + 'px'
-          asteroidElement.style.height =
-            asteroidElement.offsetHeight - 40 + 'px'
-        } else {
-          crash.play()
-          crash.volume = 0.1
-          container.removeChild(asteroidElement)
-          setCounter()
-          asteroidFunction()
-        }
-      }
-    }
-}
-
-//Create laser and initial positioning
-let createLaser = () => {
-  let laser = document.createElement('img')
-  laser.classList.add('laser')
-  laser.setAttribute('src', 'img/bullet.svg')
-  container.insertAdjacentElement('beforeend', laser)
-  laser.style.left = ship.offsetLeft + 45 + 'px'
-  // laser.style.top = ship.offsetTop + 110 + 'px'
-  laserMovement(laser)
-}
-
-//Lasershot function
-let laserShot = () => {
-  if (gameFSM.currentState !== 'PAUSE') {
-    createLaser()
-    removeLasers()
-    laserSound()
-  }
-}
-
-
-//Set the asteroid position
-let setAsteroidPosition = asteroid => {
-  
-   switch (checkingDiff) {
-    case 'easyWasPressed':
-      speed = 140
-      break;
-    case 'mediumWasPressed':
-      speed = 700
-      break;
-    case 'hardWasPressed':
-      speed = 1400
-      break;
-    default: 
-      speed = 140
-  }
-
-  let maxWidth = container.offsetWidth - asteroid.offsetWidth
-  let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1)
-  asteroid.style.left = randomPosition + 15 + 'px'
-
-
-    asteroid.style.bottom = window.innerHeight + speed + 'px'
-
-
-};
-
+    
   //Set asteroid shape
   let setAsteroidShape = asteroid => {
     asteroidShapeNumber = Math.floor(Math.random() * 9) + 1
@@ -251,8 +161,154 @@ let setAsteroidPosition = asteroid => {
     asteroid.style.height = `${asteroidShapeSize}rem`
     asteroid.style.width = `${asteroidShapeSize}rem`
   }
+    
+  //Set the asteroid position
+  let setAsteroidPosition = asteroid => {
+    
+    switch (checkingDiff) {
+     case 'easyWasPressed':
+       speed = 140
+       break;
+     case 'mediumWasPressed':
+       speed = 700
+       break;
+     case 'hardWasPressed':
+       speed = 1400
+       break;
+     default: 
+       speed = 140
+   }
+  
+   let maxWidth = container.offsetWidth - asteroid.offsetWidth
+   let randomPosition = Math.floor(Math.random() * (maxWidth - 1) + 1)
+   asteroid.style.left = randomPosition + 15 + 'px'
+    
+    
+    TimeId = setTimeout(() => {
+    asteroid.style.bottom = window.innerHeight + speed + 'px'
+    }, 1)
+  };
+  
+  
+  
+  let timeoutFunc = asteroid => {
+    let asteroidPosition = asteroid.offsetTop
+    if (asteroidPosition <= -80) {
+      if (container.contains(asteroid)) {
+        container.removeChild(asteroid)
+  
+        star = document.querySelector('.star')
+        removeStars()
+        asteroidFunction()
+        return
+      }
+    }
+    setTimeout(() => timeoutFunc(asteroid), 1000)
+  }
+  
+    // Remove asteroid
+    let removeAsteroid = asteroid => {
+      setTimeout(() => timeoutFunc(asteroid), 3000)
+  }
+    
+  
+  
+    //Full asteroid functionality
+let asteroidFunction = () => {
+      let asteroid = createAsteroid()
+      container.append(asteroid)
+      setAsteroidShape(asteroid)
+      setAsteroidPosition(asteroid)
+      removeAsteroid(asteroid)
+    }
 
-  let scoreStorage = localStorage.getItem('')
+//Remove laser when asteroid is hit
+let removeLaser = laser => {
+  if (laser) {
+    container.removeChild(laser)
+  }
+}
+
+
+//Laser movement
+let laserMovement = laser => {
+  // laser.style.top = laser.offsetTop - window.innerHeight + 'px'
+  laser.style.top = window.innerHeight + 'px'
+  let laserInterval = setInterval(() => {
+    if (
+      laser.offsetTop <=
+        asteroidElement.offsetTop + asteroidElement.offsetHeight - 10 &&
+      laser.offsetTop >= asteroidElement.offsetTop
+    ) {
+      if (
+        laser.offsetLeft >
+          asteroidElement.offsetLeft - asteroidElement.offsetWidth / 2 &&
+        laser.offsetLeft <
+          asteroidElement.offsetLeft + asteroidElement.offsetWidth
+      ) {
+        removeLaser(laser)
+        //Make asteroid smaller when hit
+        if (asteroidElement.offsetWidth > 80) {
+          asteroidElement.style.width = asteroidElement.offsetWidth - 40 + 'px'
+          asteroidElement.style.height =
+            asteroidElement.offsetHeight - 40 + 'px'
+        } else {
+          crash.play()
+          crash.volume = 0.1
+          container.removeChild(asteroidElement)
+          setCounter()
+          asteroidFunction()
+          clearInterval(laserInterval)
+        }
+      }
+    }
+  }, 10)    
+}
+
+//Create laser and initial positioning
+let createLaser = () => {
+  let laser = document.createElement('img')
+  laser.classList.add('laser')
+  laser.setAttribute('src', 'img/bullet.svg')
+  container.insertAdjacentElement('beforeend', laser)
+  laser.style.left = ship.offsetLeft + 45 + 'px'
+  // laser.style.top = ship.offsetTop + 110 + 'px'
+  laserMovement(laser)
+}
+
+//Remove lasers when hit the bottom of the window
+let removeLasers = () => {
+  let oldLasers = document.querySelectorAll('.laser')
+  for (let oldLaser of oldLasers) {
+    if (oldLaser.getBoundingClientRect().top >= window.innerHeight) {
+      oldLaser.remove()
+  }
+  }
+}
+
+//Plays laser sound
+let laserSound = () => {
+  lasersound.pause()
+  lasersound.currentTime = 0
+  lasersound.volume = 0.1
+  lasersound.play()
+}
+
+//Lasershot function
+let laserShot = () => {
+  if (gameFSM.currentState !== gameFSM.states[States.PAUSE]) {
+    createLaser()
+    removeLasers()
+    laserSound()    
+  }
+}
+
+
+
+
+
+
+  
   //Gameover Popup
   let gameoverFunc = () => {
     gameover.style.display = 'flex'
@@ -262,8 +318,8 @@ let setAsteroidPosition = asteroid => {
     })
     document.removeEventListener('click', laserShot)
     isGameOver = true
-    yourscoreNumber.textContent = counter.textContent
-    localStorage.setItem('highscore', yourscoreNumber.textContent)
+    yourScoreNumber.textContent = counter.textContent
+    localStorage.setItem('highscore', yourScoreNumber.textContent)
   }
 
   
@@ -276,6 +332,7 @@ let startGame = () => {
       event.stopPropagation()
     document.addEventListener('click', laserShot)
     gameFSM.setState(States.STARTGAME)
+    asteroidFunction()
     })
     let nameStorage = localStorage.getItem('name')
     if (nameStorage) {
@@ -289,6 +346,7 @@ let startGame = () => {
           playerLabel.textContent = playerName
           playerNameContainer.style.display = 'none'
           gameFSM.setState(States.STARTGAME)
+          asteroidFunction()
         }
       })
     }
@@ -309,47 +367,6 @@ let startGame = () => {
     }
   }
 
-  let timeoutFunc = asteroid => {
-    let asteroidPosition = asteroid.offsetTop
-    if (asteroidPosition <= -80) {
-      if (container.contains(asteroid)) {
-        container.removeChild(asteroid)
-
-        star = document.querySelector('.star')
-        removeStars()
-        asteroidFunction()
-        return
-      }
-    }
-    setTimeout(() => timeoutFunc(asteroid), 1000)
-  }
-
-  // Remove asteroid
-  let removeAsteroid = asteroid => {
-    setTimeout(() => timeoutFunc(asteroid), 3000)
-  }
-
-  //Create asteroid
-let createAsteroid = () => {
-  if (!asteroidElement) {
-    asteroidElement = document.createElement('img')
-    asteroidElement.classList.add('asteroid')
-    asteroidElement.setAttribute('draggable', 'false')
-    return asteroidElement
-    }
-    
-  }
-
-  //Full asteroid functionality
-  let asteroidFunction = () => {
-    if (isGameOver) return
-
-    let asteroid = createAsteroid()
-    container.append(asteroid)
-    setAsteroidShape(asteroid)
-    setAsteroidPosition(asteroid)
-    removeAsteroid(asteroid)
-  }
 
   //Music playback start after 3 seconds
   let musicPlay = setTimeout(() => {
@@ -409,7 +426,8 @@ let createAsteroid = () => {
     }
   }
 
-  let mouseMovement = event => {
+let mouseMovement = event => {
+  if (gameFSM.currentState !== gameFSM.states[States.PAUSE]) {
     const containerRect = container.getBoundingClientRect();
     const shipRect = ship.getBoundingClientRect();
     let newLeft = event.clientX - 60;
@@ -421,7 +439,9 @@ let createAsteroid = () => {
     }
 
     ship.style.left = newLeft + 'px';
-  }
+  }  
+    }
+
 
   // Mouse ship movement with boundary checks
   document.addEventListener('mousemove', mouseMovement);
@@ -461,13 +481,16 @@ let createAsteroid = () => {
   })
 
 pauseButton.addEventListener('click', event => {
-
-  gameFSM.setState(States.PAUSE)
-  if (gameFSM.currentState === 'PAUSE') {
+  if (gameFSM.currentState === gameFSM.states[States.STARTGAME]) {
+    gameFSM.setState(States.PAUSE)
+  } else {
     gameFSM.setState(States.STARTGAME)
   }
+  
+  
   event.stopPropagation()
   })
+
 
 
 
@@ -512,6 +535,7 @@ const beforeStartState  = {
     console.log('Entering beforeStart state');
     ship.style.display = 'none'
     start.style.display = 'flex'
+    pauseButton.style.display = 'none'
     
 
     
@@ -538,14 +562,14 @@ const startGameState  = {
     start.style.display = 'none'
     gameover.style.display = 'none'
     ship.style.display = 'flex'  
-
+    pauseButton.style.display = 'flex'
     
 
 
   },
   update: () => {
     animate()
-    asteroidFunction()
+    
     // Логика для состояния
   },
   exit: () => {
@@ -556,12 +580,25 @@ const startGameState  = {
 const pauseState  = {
   enter: () => {
     console.log('Entering pauseState state');
+    
+    
+    
+    coords = window.innerHeight - asteroidElement.getBoundingClientRect().bottom
+    console.log(asteroidElement.getBoundingClientRect().bottom)
+    lastcoords = asteroidElement.style.bottom = coords + 'px'
+
   },
   update: () => {
-    // Логика для состояния
+    
+    asteroidElement.style.bottom = lastcoords
+    
   },
   exit: () => {
     console.log('Exiting pauseState state');
+
+
+    asteroidElement.style.bottom = window.innerHeight + speed + 'px'
+
   }
 };
 
@@ -571,7 +608,7 @@ const gameoverState  = {
     console.log('Entering gameoverState state');
     gameover.style.display = 'flex'
     ship.style.display = 'none'
-
+    
 
   },
   update: () => {
