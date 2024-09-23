@@ -1,3 +1,8 @@
+import { joinRoom } from 'trystero'
+
+const config = {appId: 'san_narciso_3d'}
+const room = joinRoom(config, 'yoyodyne')
+
 let container = document.querySelector('.container')
 let playerNameContainer = document.querySelector('.playerNameContainer')
 let playerInput = document.querySelector('.playerInput')
@@ -377,6 +382,8 @@ let startGame = () => {
   }
 
 
+
+
   //Toggle music
   toggleMusic.addEventListener('click', event => {
     if (audio.paused) {
@@ -540,7 +547,7 @@ const beforeStartState  = {
     start.style.display = 'flex'
     pauseButton.style.display = 'none'
     highscoreNumber.textContent = localStorage.getItem('highscore')
-    
+
     
 
 
